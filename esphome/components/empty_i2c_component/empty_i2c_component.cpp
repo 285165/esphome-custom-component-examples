@@ -8,7 +8,7 @@ static const char *TAG = "empty_i2c_component.component";
 static int i = 100;
 
 void EmptyI2CComponent::setup() {
-
+	ESP_LOGCONFIG(TAG, "Setting up EmptyI2CComponent...");
 }
 
 void EmptyI2CComponent::loop() {
