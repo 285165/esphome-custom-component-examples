@@ -9,7 +9,7 @@ static int i = 9999;
 
 void EmptyI2CComponent::setup() {
 	ESP_LOGD(TAG, "Setting up EmptyI2CComponent...");
-	ESP_LOGD(TAG, "	address %02x", this->address_);
+	ESP_LOGD(TAG, "	address x%02x", this->address_);
 }
 
 void EmptyI2CComponent::loop() {
@@ -23,7 +23,8 @@ void EmptyI2CComponent::loop() {
 
 void EmptyI2CComponent::dump_config(){
     ESP_LOGCONFIG(TAG, "Empty I2C component");
-	ESP_LOGCONFIG(TAG, " address %02x", this->address_);
+	ESP_LOGCONFIG(TAG, " component source %s", this->component_source_);
+	ESP_LOGCONFIG(TAG, " address x%02x", this->address_);
 }
 
 
