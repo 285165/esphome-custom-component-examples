@@ -26,7 +26,7 @@ class EmptyI2CComponent : public i2c::I2CDevice, public Component {
   //void set_i2c_bus(I2CBus *bus) { bus_ = bus; }
   
   void set_my_required_key(std::string my_required_key) { this->my_required_key_ = std::move(my_required_key); };
-  void set_my_optional_key(int my_required_key) { this->my_required_key_ = my_required_key; }
+  void set_my_optional_key(int my_optional_key) { this->my_optional_key_ = my_optional_key; }
   
  protected:
   uint8_t address_{0x00};  ///< store the address of the device on the bus
