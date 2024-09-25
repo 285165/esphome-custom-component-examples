@@ -10,6 +10,8 @@
 #define CONFIG_PMU_SCL 22
 #endif
 
+#define XPOWERS_CHIP_AXP2101
+
 namespace esphome {
 namespace empty_i2c_component {
 
