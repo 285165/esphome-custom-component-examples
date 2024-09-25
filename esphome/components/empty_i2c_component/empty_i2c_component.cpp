@@ -19,20 +19,22 @@ namespace empty_i2c_component {
 
 static const char *TAG = "empty_i2c_component.component";
 static int i = 9999;
-static XPowersPMU power;
+//static XPowersPMU power;
 
 
 void EmptyI2CComponent::setup() {
 	const uint8_t i2c_sda = CONFIG_PMU_SDA;
 	const uint8_t i2c_scl = CONFIG_PMU_SCL
-	
+/*	
 	bool result = power.begin(Wire, AXP2101_SLAVE_ADDRESS, i2c_sda, i2c_scl);
     if (result == false) {
         ESP_LOGD("power is not online...");
     }
-	
+*/	
 	ESP_LOGD(TAG, "Setting up EmptyI2CComponent...");
 	ESP_LOGD(TAG, "	address x%02x", this->address_);
+	ESP_LOGD(TAG, "	my_required_key: %s", this->my_required_key_);
+	ESP_LOGD(TAG, "	my_optional_key: %d", this->my_optional_key_);
 }
 
 void EmptyI2CComponent::loop() {

@@ -23,8 +23,13 @@ class EmptyI2CComponent : public i2c::I2CDevice, public Component {
   /// @param bus pointer to the I2CBus object
   //void set_i2c_bus(I2CBus *bus) { bus_ = bus; }
   
+  void set_my_required_key(string my_required_key) { my_required_key_ = my_required_key; }
+  void set_my_optional_key(int my_required_key) { my_required_key_ = my_required_key; }
+  
  protected:
   uint8_t address_{0x00};  ///< store the address of the device on the bus
+  int my_optional_key_;
+  string my_required_key_{nullptr};
   //I2CBus *bus_{nullptr};   ///< pointer to I2CBus instance
 };
 
