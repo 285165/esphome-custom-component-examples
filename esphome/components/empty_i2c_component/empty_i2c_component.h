@@ -6,6 +6,8 @@
 #include "esphome/components/i2c/i2c.h"
 #include "esphome/components/i2c/i2c_bus.h"
 
+#include "XPowersLib.h"
+
 namespace esphome {
 namespace empty_i2c_component {
 
