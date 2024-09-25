@@ -19,7 +19,7 @@ namespace empty_i2c_component {
 
 static const char *TAG = "empty_i2c_component.component";
 static int i = 9999;
-static XPowers power;
+static XPowersPMU power;
 
 
 void EmptyI2CComponent::setup() {
