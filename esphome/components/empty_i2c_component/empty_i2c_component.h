@@ -1,7 +1,10 @@
 #pragma once
 
 #include "esphome/core/component.h"
+#include "esphome/core/helpers.h"
+#include "esphome/core/optional.h"
 #include "esphome/components/i2c/i2c.h"
+#include "esphome/components/i2c/i2c_bus.h"
 
 namespace esphome {
 namespace empty_i2c_component {
