@@ -2,7 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import i2c, sensor
 #from ..bmp280_base import to_code_base, CONFIG_SCHEMA_BASE
-from esphome.const import CONF_ID #, ICON_EMPTY, UNIT_EMPTY
+from esphome.const import CONF_ID, CONF_NAME #, ICON_EMPTY, UNIT_EMPTY
 
 #AUTO_LOAD = ["bmp280_base"]
 CODEOWNERS = ["@285165"]
@@ -15,6 +15,7 @@ EmptyI2CSensor = empty_i2c_sensor_ns.class_('EmptyI2CSensor', cg.PollingComponen
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(EmptyI2CSensor),
+    cv.Required(CONF_NAME): cv.valid_name
 #    cv.Optional(CONF_BUS_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 2),
 #    cv.Optional(CONF_SHUNT_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 2),
 #    cv.Optional(CONF_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_FLASH, 3),
