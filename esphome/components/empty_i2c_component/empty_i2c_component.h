@@ -21,11 +21,11 @@ class EmptyI2CComponent : public i2c::I2CDevice, public Component {
 
   /// @brief we store the pointer to the I2CBus to use
   /// @param bus pointer to the I2CBus object
-  void set_i2c_bus(I2CBus *bus) { bus_ = bus; }
+  //void set_i2c_bus(I2CBus *bus) { bus_ = bus; }
   
  protected:
   uint8_t address_{0x00};  ///< store the address of the device on the bus
-  I2CBus *bus_{nullptr};   ///< pointer to I2CBus instance
+  //I2CBus *bus_{nullptr};   ///< pointer to I2CBus instance
 };
 
 
