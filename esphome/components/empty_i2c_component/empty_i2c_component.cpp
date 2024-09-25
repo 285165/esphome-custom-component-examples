@@ -19,13 +19,12 @@ namespace empty_i2c_component {
 
 static const char *TAG = "empty_i2c_component.component";
 static int i = 9999;
+static XPowers power;
 
 
 void EmptyI2CComponent::setup() {
 	const uint8_t i2c_sda = CONFIG_PMU_SDA;
 	const uint8_t i2c_scl = CONFIG_PMU_SCL
-
-	XPowers power;
 	
 	bool result = power.begin(Wire, AXP2101_SLAVE_ADDRESS, i2c_sda, i2c_scl);
     if (result == false) {
