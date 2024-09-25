@@ -11,7 +11,7 @@ void EmptyI2CSensor::setup(){
 }
 
 void EmptyI2CSensor::update(){
-
+	ESP_LOGD(TAG, "EmptyI2CSensor::update()");
 }
 
 void EmptyI2CSensor::dump_config(){
