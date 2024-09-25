@@ -1,5 +1,6 @@
 #include "esphome/core/log.h"
 #include "empty_i2c_component.h"
+#include "XPowersLib.h"
 
 #ifndef CONFIG_PMU_SDA
 #define CONFIG_PMU_SDA 21
