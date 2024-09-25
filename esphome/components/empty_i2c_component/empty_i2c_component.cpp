@@ -25,7 +25,7 @@ EmptyI2CComponent::EmptyI2CComponent() {}
 
 void EmptyI2CComponent::setup() {
 	const uint8_t i2c_sda = CONFIG_PMU_SDA;
-	const uint8_t i2c_scl = CONFIG_PMU_SCL
+	const uint8_t i2c_scl = CONFIG_PMU_SCL;
 /*	
 	bool result = power.begin(Wire, AXP2101_SLAVE_ADDRESS, i2c_sda, i2c_scl);
     if (result == false) {
