@@ -16,7 +16,7 @@ EmptyI2CSensor = empty_i2c_sensor_ns.class_('EmptyI2CSensor', cg.PollingComponen
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(EmptyI2CSensor),
     cv.Optional(CONF_NAME): cv.valid_name,
-    cv.Optional(CONF_BUS_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 2),
+#   cv.Optional(CONF_BUS_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 2),
 #    cv.Optional(CONF_SHUNT_VOLTAGE): sensor.sensor_schema(UNIT_VOLT, ICON_FLASH, 2),
 #    cv.Optional(CONF_CURRENT): sensor.sensor_schema(UNIT_AMPERE, ICON_FLASH, 3),
 #    cv.Optional(CONF_POWER): sensor.sensor_schema(UNIT_WATT, ICON_FLASH, 2),
