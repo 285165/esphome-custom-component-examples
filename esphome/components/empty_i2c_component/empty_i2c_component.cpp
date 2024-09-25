@@ -1,6 +1,8 @@
 #include "esphome/core/log.h"
 #include "empty_i2c_component.h"
 #include <XPowersLib.h>
+#include <Wire.h>
+#include <Arduino.h>
 
 #ifndef CONFIG_PMU_SDA
 #define CONFIG_PMU_SDA 21
@@ -17,12 +19,13 @@ namespace empty_i2c_component {
 
 static const char *TAG = "empty_i2c_component.component";
 static int i = 9999;
-XPowersPMU power;
+
 
 void EmptyI2CComponent::setup() {
 	const uint8_t i2c_sda = CONFIG_PMU_SDA;
 	const uint8_t i2c_scl = CONFIG_PMU_SCL
 
+	XPowers power;
 	
 	bool result = power.begin(Wire, AXP2101_SLAVE_ADDRESS, i2c_sda, i2c_scl);
     if (result == false) {
