@@ -20,6 +20,7 @@ void EmptyI2CComponent::loop() {
 
 void EmptyI2CComponent::dump_config(){
     ESP_LOGCONFIG(TAG, "Empty I2C component");
+	ESP_LOGCONFIG(TAG, "	CONF_I2C_ADDR: %02x",0xff);
 }
 
 
