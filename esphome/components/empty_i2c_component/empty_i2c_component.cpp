@@ -21,6 +21,7 @@ static const char *TAG = "empty_i2c_component.component";
 static int i = 9999;
 //static XPowersPMU power;
 
+EmptyI2CComponent::EmptyI2CComponent() {}
 
 void EmptyI2CComponent::setup() {
 	const uint8_t i2c_sda = CONFIG_PMU_SDA;
