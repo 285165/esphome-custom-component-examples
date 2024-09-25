@@ -5,16 +5,18 @@ namespace esphome {
 namespace empty_i2c_component {
 
 static const char *TAG = "empty_i2c_component.component";
-static int i = 0;
+static int i = 100;
 
 void EmptyI2CComponent::setup() {
 
 }
 
 void EmptyI2CComponent::loop() {
-	if (++i > 1000) {
+	if (i >= 100) {
 		i = 0;
 		ESP_LOGD(TAG, "EmptyI2CComponent::loop");
+	} else {
+		i++;
 	}
 }
 
