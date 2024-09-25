@@ -8,8 +8,8 @@ static const char *TAG = "empty_i2c_component.component";
 static int i = 9999;
 
 void EmptyI2CComponent::setup() {
-	ESP_LOGCONFIG(TAG, "Setting up EmptyI2CComponent...");
-	ESP_LOGCONFIG(TAG, "	address %02x", this->address_);
+	ESP_LOGD(TAG, "Setting up EmptyI2CComponent...");
+	ESP_LOGD(TAG, "	address %02x", this->address_);
 }
 
 void EmptyI2CComponent::loop() {
@@ -23,7 +23,7 @@ void EmptyI2CComponent::loop() {
 
 void EmptyI2CComponent::dump_config(){
     ESP_LOGCONFIG(TAG, "Empty I2C component");
-	ESP_LOGCONFIG(TAG, "	CONF_I2C_ADDR: %02x",0xff);
+	ESP_LOGCONFIG(TAG, " address %02x", this->address_);
 }
 
 
