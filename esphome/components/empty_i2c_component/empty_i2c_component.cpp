@@ -9,6 +9,7 @@ static int i = 9999;
 
 void EmptyI2CComponent::setup() {
 	ESP_LOGCONFIG(TAG, "Setting up EmptyI2CComponent...");
+	ESP_LOGCONFIG(TAG, "	address %02x", this->address_);
 }
 
 void EmptyI2CComponent::loop() {
