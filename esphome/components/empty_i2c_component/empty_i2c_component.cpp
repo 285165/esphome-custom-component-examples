@@ -43,8 +43,8 @@ EmptyI2CComponent::EmptyI2CComponent() {}
 
 void EmptyI2CComponent::update() {
   ESP_LOGI(TAG, " component state: x%08x",this->component_state_);
-  if (this->altitude_sensor_ != nullptr)
-    this->altitude_sensor_->publish_state(this->altitude_);
+  if (this->my_altitude_sensor_ != nullptr)
+    this->my_altitude_sensor_->publish_state(this->altitude_);
 
   if (this->satelites_sensor_ != nullptr)
     this->satelites_sensor_->publish_state(this->satellites_);
