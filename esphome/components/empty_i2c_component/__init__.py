@@ -10,7 +10,7 @@ from esphome.const import (
 DEPENDENCIES = ["i2c"]
 CODEOWNERS = ["@285165"]
 
-CONF_MY_SATELLITES  =   'my_satelites'
+CONF_MY_SATELITES  =   'my_satelites'
 CONF_MY_ALTITUDE    =   'my_altitude'
 CONF_MY_REQUIRED_KEY = 'my_required_key'
 CONF_MY_OPTIONAL_KEY = 'my_optional_key'
@@ -30,7 +30,7 @@ CONFIG_SCHEMA = cv.All(
                 unit_of_measurement=UNIT_METER,
                 accuracy_decimals=1,
             ),
-            cv.Optional(CONF_MY_SATELLITES): sensor.sensor_schema(
+            cv.Optional(CONF_MY_SATELITES): sensor.sensor_schema(
                 accuracy_decimals=0,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
@@ -56,8 +56,8 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_MY_ALTITUDE])
         cg.add(var.set_altitude_sensor(sens))
 
-    if CONF_MY_SATELLITES in config:
-        sens = await sensor.new_sensor(config[CONF_MY_SATELLITES])
+    if CONF_MY_SATELITES in config:
+        sens = await sensor.new_sensor(config[CONF_MY_SATELITES])
         cg.add(var.set_satellites_sensor(sens))
     
     # https://github.com/lewisxhe/XPowersLib
