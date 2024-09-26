@@ -3,6 +3,7 @@
 #include <XPowersLib.h>
 #include <Wire.h>
 #include <Arduino.h>
+#include <experimental/random>
 
 #ifndef CONFIG_PMU_SDA
 #define CONFIG_PMU_SDA 21
@@ -52,12 +53,12 @@ void EmptyI2CComponent::update() {
 void EmptyI2CComponent::loop() {
 	while (this->available() && !this->has_time_) {
 		if (true /*tiny_gps_.altitude.isUpdated()*/) {
-			this->altitude_ = 100.2; //tiny_gps_.altitude.meters();
+			this->altitude_ = static_cast <float> (1000*std::experimental::randint(0, 100)) / static_cast <float> (100); //tiny_gps_.altitude.meters();
 			ESP_LOGD(TAG, "Altitude:");
 			ESP_LOGD(TAG, "  %f m", this->altitude_);
       	}
 		if (true /*tiny_gps_.satellites.isUpdated()*/) {
-			this->satellites_ = 10; //tiny_gps_.satellites.value();
+			this->satellites_ = std::experimental::randint(1, 12);
 			ESP_LOGD(TAG, "Satellites:");
 			ESP_LOGD(TAG, "  %d", this->satellites_);
 		}
