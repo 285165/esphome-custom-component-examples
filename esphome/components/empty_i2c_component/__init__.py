@@ -23,14 +23,14 @@ CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(EmptyI2CComponent),
     cv.Required(CONF_MY_REQUIRED_KEY): cv.string,
     cv.Optional(CONF_MY_OPTIONAL_KEY, default=10): cv.int_,
-    cv.Optional(CONF_ALTITUDE): sensor.sensor_schema(
-        unit_of_measurement=UNIT_METER,
-        accuracy_decimals=1,
-    ),
-    cv.Optional(CONF_SATELLITES): sensor.sensor_schema(
-        accuracy_decimals=0,
-        state_class=STATE_CLASS_MEASUREMENT,
-    ),
+    # cv.Optional(CONF_ALTITUDE): sensor.sensor_schema(
+    #     unit_of_measurement=UNIT_METER,
+    #     accuracy_decimals=1,
+    # ),
+    # cv.Optional(CONF_SATELLITES): sensor.sensor_schema(
+    #     accuracy_decimals=0,
+    #     state_class=STATE_CLASS_MEASUREMENT,
+    # ),
 }).extend(cv.COMPONENT_SCHEMA).extend(cv.polling_component_schema("30s")).extend(i2c.i2c_device_schema(CONF_I2C_ADDR)),cv.only_with_arduino,
 
 async def to_code(config):
@@ -44,9 +44,9 @@ async def to_code(config):
     if CONF_MY_OPTIONAL_KEY in config:
         cg.add(var.set_my_optional_key(config[CONF_MY_OPTIONAL_KEY]))
 
-    if CONF_SATELLITES in config:
-        sens = await sensor.new_sensor(config[CONF_SATELLITES])
-        cg.add(var.set_satellites_sensor(sens))
+    # if CONF_SATELLITES in config:
+    #     sens = await sensor.new_sensor(config[CONF_SATELLITES])
+    #     cg.add(var.set_satellites_sensor(sens))
     
     # https://github.com/lewisxhe/XPowersLib
     cg.add_library("lewisxhe/XPowersLib", "0.2.6")
