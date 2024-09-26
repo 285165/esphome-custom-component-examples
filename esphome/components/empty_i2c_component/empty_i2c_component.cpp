@@ -18,7 +18,7 @@ namespace esphome {
 namespace empty_i2c_component {
 
 static const char *TAG = "empty_i2c_component.component";
-static int i = this->my_optional_key_-1;
+static int i = std::numeric_limits<int>::max()-1;
 //static XPowersPMU power;
 
 EmptyI2CComponent::EmptyI2CComponent() {}
@@ -43,6 +43,7 @@ void EmptyI2CComponent::loop() {
 		i = 0;
 		ESP_LOGD(TAG, "EmptyI2CComponent::loop");
 		ESP_LOGCONFIG(TAG, " component state: x%08x",this->component_state_);
+		status_set_warning("testowe ostrzeżenie");
 	} else {
 		i++;
 	}
@@ -55,7 +56,6 @@ void EmptyI2CComponent::dump_config(){
 	ESP_LOGCONFIG(TAG, " address: x%02x", this->address_);
 	ESP_LOGCONFIG(TAG, " my_required_key: %s", this->my_required_key_.c_str());
 	ESP_LOGCONFIG(TAG, " my_optional_key: %d", this->my_optional_key_);
-	status_set_warning("testowe ostrzeżenie");
 }
 
 
