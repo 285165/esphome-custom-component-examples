@@ -28,6 +28,8 @@ void GPS::update() {
 
   if (this->satellites_sensor_ != nullptr)
     this->satellites_sensor_->publish_state(this->satellites_);
+  if (this->hdop_sensor_ != nullptr)
+    this->hdop_sensor_->publish_state(this->hdop_);
 }
 
 void GPS::loop() {
@@ -61,6 +63,12 @@ void GPS::loop() {
         this->satellites_ = tiny_gps_.satellites.value();
         ESP_LOGD(TAG, "Satellites:");
         ESP_LOGD(TAG, "  %d", this->satellites_);
+      }
+
+      if (tiny_gps_.hdop.isUpdated()) {
+        this->hdop_ = tiny_gps_.hdop.hdop();
+        ESP_LOGD(TAG, "HDOP:");
+        ESP_LOGD(TAG, "  %f", this->hdop_);
       }
 
       for (auto *listener : this->listeners_)

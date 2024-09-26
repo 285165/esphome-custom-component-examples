@@ -16,6 +16,8 @@ from esphome.const import (
     UNIT_METER,
 )
 
+CONF_HDOP  =   'hdop'
+
 DEPENDENCIES = ["uart"]
 AUTO_LOAD = ["sensor"]
 
@@ -55,6 +57,10 @@ CONFIG_SCHEMA = cv.All(
                 accuracy_decimals=0,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
+                cv.Optional(CONF_HDOP): sensor.sensor_schema(
+                accuracy_decimals=2,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
         }
     )
     .extend(cv.polling_component_schema("20s"))
@@ -92,6 +98,10 @@ async def to_code(config):
     if CONF_SATELLITES in config:
         sens = await sensor.new_sensor(config[CONF_SATELLITES])
         cg.add(var.set_satellites_sensor(sens))
+
+    if CONF_HDOP in config:
+        sens = await sensor.new_sensor(config[CONF_HDOP])
+        cg.add(var.set_hdop_sensor(sens))
 
     # https://platformio.org/lib/show/1655/TinyGPSPlus
     cg.add_library("mikalhart/TinyGPSPlus", "1.0.3")

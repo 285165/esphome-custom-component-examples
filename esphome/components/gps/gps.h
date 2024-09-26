@@ -33,6 +33,7 @@ class GPS : public PollingComponent, public uart::UARTDevice {
   void set_course_sensor(sensor::Sensor *course_sensor) { course_sensor_ = course_sensor; }
   void set_altitude_sensor(sensor::Sensor *altitude_sensor) { altitude_sensor_ = altitude_sensor; }
   void set_satellites_sensor(sensor::Sensor *satellites_sensor) { satellites_sensor_ = satellites_sensor; }
+  void set_hdop_sensor(sensor::Sensor *hdop_sensor) { hdop_sensor_ = hdop_sensor; }
 
   void register_listener(GPSListener *listener) {
     listener->parent_ = this;
@@ -52,6 +53,7 @@ class GPS : public PollingComponent, public uart::UARTDevice {
   float course_ = -1;
   float altitude_ = -1;
   int satellites_ = -1;
+  float hdop_ = -1;
 
   sensor::Sensor *latitude_sensor_{nullptr};
   sensor::Sensor *longitude_sensor_{nullptr};
@@ -59,6 +61,7 @@ class GPS : public PollingComponent, public uart::UARTDevice {
   sensor::Sensor *course_sensor_{nullptr};
   sensor::Sensor *altitude_sensor_{nullptr};
   sensor::Sensor *satellites_sensor_{nullptr};
+  sensor::Sensor *hdop_sensor_{nullptr};
 
   bool has_time_{false};
   TinyGPSPlus tiny_gps_;
