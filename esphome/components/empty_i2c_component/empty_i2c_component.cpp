@@ -18,7 +18,7 @@ namespace esphome {
 namespace empty_i2c_component {
 
 static const char *TAG = "empty_i2c_component.component";
-static int i = 9999;
+static int i = this->my_optional_key_-1;
 //static XPowersPMU power;
 
 EmptyI2CComponent::EmptyI2CComponent() {}
@@ -39,9 +39,10 @@ void EmptyI2CComponent::setup() {
 }
 
 void EmptyI2CComponent::loop() {
-	if (i >= 10000) {
+	if (i >= this->my_optional_key_) {
 		i = 0;
 		ESP_LOGD(TAG, "EmptyI2CComponent::loop");
+		ESP_LOGCONFIG(TAG, " component state: x%08x",this->component_state_);
 	} else {
 		i++;
 	}
