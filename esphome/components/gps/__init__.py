@@ -104,4 +104,4 @@ async def to_code(config):
         cg.add(var.set_hdop_sensor(sens))
 
     # https://platformio.org/lib/show/1655/TinyGPSPlus
-    cg.add_library("mikalhart/TinyGPSPlus", "1.0.3")
+    cg.add_library("285165/TinyGPSPlus", "1.0.4")
