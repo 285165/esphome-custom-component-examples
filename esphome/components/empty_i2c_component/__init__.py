@@ -22,7 +22,7 @@ EmptyI2CComponent = empty_i2c_component_ns.class_('EmptyI2CComponent', cg.Compon
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(EmptyI2CComponent),
     cv.Required(CONF_MY_REQUIRED_KEY): cv.string,
-    cv.Optional(CONF_MY_OPTIONAL_KEY, default=10): cv.int_,
+    # cv.Optional(CONF_MY_OPTIONAL_KEY, default=10): cv.int_,
     # cv.Optional(CONF_ALTITUDE): sensor.sensor_schema(
     #     unit_of_measurement=UNIT_METER,
     #     accuracy_decimals=1,
@@ -41,8 +41,8 @@ async def to_code(config):
     cg.add(var.set_my_required_key(config[CONF_MY_REQUIRED_KEY]))
     
 
-    if CONF_MY_OPTIONAL_KEY in config:
-        cg.add(var.set_my_optional_key(config[CONF_MY_OPTIONAL_KEY]))
+    # if CONF_MY_OPTIONAL_KEY in config:
+    #     cg.add(var.set_my_optional_key(config[CONF_MY_OPTIONAL_KEY]))
 
     # if CONF_SATELLITES in config:
     #     sens = await sensor.new_sensor(config[CONF_SATELLITES])
