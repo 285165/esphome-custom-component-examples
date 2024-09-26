@@ -15,10 +15,10 @@ class EmptyI2CComponent : public PollingComponent, public i2c::I2CDevice {
  public:
   EmptyI2CComponent();
 
-  void setup() override;
+  // void setup() override;
   void loop() override;
   void update() override;
-  void dump_config() override;
+  // void dump_config() override;
   
   /// @brief We store the address of the device on the bus
   /// @param address of the device
