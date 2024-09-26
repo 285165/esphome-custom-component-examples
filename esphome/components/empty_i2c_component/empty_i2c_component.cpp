@@ -46,8 +46,8 @@ void EmptyI2CComponent::update() {
   if (this->altitude_sensor_ != nullptr)
     this->altitude_sensor_->publish_state(this->altitude_);
 
-  if (this->satellites_sensor_ != nullptr)
-    this->satellites_sensor_->publish_state(this->satellites_);
+  if (this->satelites_sensor_ != nullptr)
+    this->satelites_sensor_->publish_state(this->satellites_);
 }
 
 void EmptyI2CComponent::loop() {
