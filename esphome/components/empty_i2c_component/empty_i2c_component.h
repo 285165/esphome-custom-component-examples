@@ -3,6 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/core/helpers.h"
 #include "esphome/core/optional.h"
+#include "esphome/components/sensor/sensor.h"
 #include "esphome/components/i2c/i2c.h"
 #include "esphome/components/i2c/i2c_bus.h"
 #include <utility>
@@ -10,11 +11,15 @@
 namespace esphome {
 namespace empty_i2c_component {
 
-class EmptyI2CComponent : public i2c::I2CDevice, public Component {
+class EmptyI2CComponent : public PollingComponent, public i2c::I2CDevice {
  public:
   EmptyI2CComponent();
+  void set_altitude_sensor(sensor::Sensor *altitude_sensor) { altitude_sensor_ = altitude_sensor; }
+  void set_satellites_sensor(sensor::Sensor *satellites_sensor) { satellites_sensor_ = satellites_sensor; }
+  
   void setup() override;
   void loop() override;
+  void update() override;
   void dump_config() override;
   
   /// @brief We store the address of the device on the bus
@@ -33,7 +38,11 @@ class EmptyI2CComponent : public i2c::I2CDevice, public Component {
   uint8_t address_{0x00};  ///< store the address of the device on the bus
   int my_optional_key_;
   std::string my_required_key_;
-  //I2CBus *bus_{nullptr};   ///< pointer to I2CBus instance
+  float altitude_ = -1;
+  int satellites_ = -1;
+
+  sensor::Sensor *altitude_sensor_{nullptr};
+  sensor::Sensor *satellites_sensor_{nullptr};
 };
 
 
