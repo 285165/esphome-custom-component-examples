@@ -32,10 +32,10 @@ void GPS::update() {
   if (this->hdop_sensor_ != nullptr)
     this->hdop_sensor_->publish_state(this->hdop_);
 
-  if (this->hdop_sensor_ != nullptr)
+  if (this->pdop_sensor_ != nullptr)
     this->pdop_sensor_->publish_state(this->pdop_);
 
-  if (this->hdop_sensor_ != nullptr)
+  if (this->vdop_sensor_ != nullptr)
     this->vdop_sensor_->publish_state(this->vdop_);    
 }
 
