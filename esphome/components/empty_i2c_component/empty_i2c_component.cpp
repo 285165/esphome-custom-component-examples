@@ -51,7 +51,7 @@ void EmptyI2CComponent::loop() {
 		}
 		if ( i%1000 == 501) {
 		  status_clear_warning();
-	  	  ESP_LOGI(TAG, " component state: x%08x",this->component_state_);
+	  	  ESP_LOGW(TAG, " component state: x%08x",this->component_state_);
 		}
 		i++;
 	}
