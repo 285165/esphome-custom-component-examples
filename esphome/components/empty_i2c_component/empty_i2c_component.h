@@ -33,8 +33,8 @@ class EmptyI2CComponent : public PollingComponent, public i2c::I2CDevice {
   void set_my_optional_key(int my_optional_key) { this->my_optional_key_ = my_optional_key; }
 
   bool available() {return true;}
-  void set_my_altitude_sensor(sensor::Sensor *altitude_sensor) { altitude_sensor_ = altitude_sensor; }
-  void set_my_satelites_sensor(sensor::Sensor *satelites_sensor) { satelites_sensor_ = satelites_sensor; }
+  void set_altitude_sensor(sensor::Sensor *altitude_sensor) { altitude_sensor_ = altitude_sensor; }
+  void set_satelites_sensor(sensor::Sensor *satelites_sensor) { satelites_sensor_ = satelites_sensor; }
   
  protected:
   uint8_t address_{0x00};  ///< store the address of the device on the bus
