@@ -46,7 +46,8 @@ void EmptyI2CComponent::loop() {
 		if ( i%100 == 0) {
 		  status_set_warning("testowe ostrzeżenie");
 	      ESP_LOGE(TAG, " component state: x%08x",this->component_state_);
-		} else {
+		}
+		if ( i%100 == 51) {
 		  status_clear_warning();
 	  	  ESP_LOGW(TAG, " component state: x%08x",this->component_state_);
 		}
