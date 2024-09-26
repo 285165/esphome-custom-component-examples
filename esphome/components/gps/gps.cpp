@@ -77,11 +77,18 @@ void GPS::loop() {
         ESP_LOGD(TAG, "HDOP:");
         ESP_LOGD(TAG, "  %f", this->hdop_);
       }
-
-      if (tiny_gps_.pdop.isUpdated()) {
+//
+// requires chanes in lib
+//
+      if (tiny_gps_.hdop.isUpdated()) {
         this->pdop_ = tiny_gps_.hdop.hdop();
         ESP_LOGD(TAG, "PDOP:");
         ESP_LOGD(TAG, "  %f", this->pdop_);
+
+      if (tiny_gps_.hdop.isUpdated()) {
+        this->pdop_ = tiny_gps_.hdop.hdop();
+        ESP_LOGD(TAG, "VDOP:");
+        ESP_LOGD(TAG, "  %f", this->vdop_);        
       }
 
 // requires changes in lib
