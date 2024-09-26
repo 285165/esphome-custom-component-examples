@@ -69,3 +69,4 @@ class GPS : public PollingComponent, public uart::UARTDevice {
 }  // namespace esphome
 
 #endif  // USE_ARDUINO
+// 285165
