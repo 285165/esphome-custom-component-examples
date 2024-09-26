@@ -43,7 +43,10 @@ void EmptyI2CComponent::loop() {
 		i = 0;
 		ESP_LOGD(TAG, "EmptyI2CComponent::loop");
 		ESP_LOGCONFIG(TAG, " component state: x%08x",this->component_state_);
-		status_set_warning("testowe ostrzeżenie");
+		if (i%100 == 0)
+		  status_set_warning("testowe ostrzeżenie");
+	    else
+		  status_clear_warning();
 	} else {
 		i++;
 	}
