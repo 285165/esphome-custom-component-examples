@@ -40,21 +40,43 @@ void EmptyI2CComponent::setup() {
 	ESP_LOGD(TAG, "	my_optional_key: %d", this->my_optional_key_);
 }
 
+void EmptyI2CComponent::update() {
+  ESP_LOGI(TAG, " component state: x%08x",this->component_state_);
+  if (this->altitude_sensor_ != nullptr)
+    this->altitude_sensor_->publish_state(this->altitude_);
+
+  if (this->satellites_sensor_ != nullptr)
+    this->satellites_sensor_->publish_state(this->satellites_);
+}
+
 void EmptyI2CComponent::loop() {
-	if (i >= this->my_optional_key_) {
-		i = 0;
-		ESP_LOGD(TAG, "EmptyI2CComponent::loop");
-	} else {
-		if ( i%1000 == 0) {
-		  status_set_warning("testowe ostrzeżenie");
-	      ESP_LOGI(TAG, " component state: x%08x",this->component_state_);
+	while (this->available() && !this->has_time_) {
+		if (tiny_gps_.altitude.isUpdated()) {
+			this->altitude_ = 100.2; //tiny_gps_.altitude.meters();
+			ESP_LOGD(TAG, "Altitude:");
+			ESP_LOGD(TAG, "  %f m", this->altitude_);
+      	}
+		if (tiny_gps_.satellites.isUpdated()) {
+			this->satellites_ = 10; //tiny_gps_.satellites.value();
+			ESP_LOGD(TAG, "Satellites:");
+			ESP_LOGD(TAG, "  %d", this->satellites_);
 		}
-		if ( i%1000 == 501) {
-		  status_clear_warning();
-	  	  ESP_LOGI(TAG, " component state: x%08x",this->component_state_);
-		}
-		i++;
 	}
+  }
+	// if (i >= this->my_optional_key_) {
+	// 	i = 0;
+	// 	ESP_LOGD(TAG, "EmptyI2CComponent::loop");
+	// } else {
+	// 	if ( i%1000 == 0) {
+	// 	  status_set_warning("testowe ostrzeżenie");
+	//       ESP_LOGI(TAG, " component state: x%08x",this->component_state_);
+	// 	}
+	// 	if ( i%1000 == 501) {
+	// 	  status_clear_warning();
+	//   	  ESP_LOGI(TAG, " component state: x%08x",this->component_state_);
+	// 	}
+	// 	i++;
+	// }
 }
 
 void EmptyI2CComponent::dump_config(){

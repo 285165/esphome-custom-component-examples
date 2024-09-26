@@ -16,7 +16,7 @@ class EmptyI2CComponent : public PollingComponent, public i2c::I2CDevice {
   EmptyI2CComponent();
   void set_altitude_sensor(sensor::Sensor *altitude_sensor) { altitude_sensor_ = altitude_sensor; }
   void set_satellites_sensor(sensor::Sensor *satellites_sensor) { satellites_sensor_ = satellites_sensor; }
-  
+
   void setup() override;
   void loop() override;
   void update() override;
@@ -38,6 +38,8 @@ class EmptyI2CComponent : public PollingComponent, public i2c::I2CDevice {
   uint8_t address_{0x00};  ///< store the address of the device on the bus
   int my_optional_key_;
   std::string my_required_key_;
+
+  bool has_time_{true};
   float altitude_ = -1;
   int satellites_ = -1;
 
