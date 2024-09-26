@@ -50,6 +50,7 @@ void EmptyI2CComponent::loop() {
 void EmptyI2CComponent::dump_config(){
     ESP_LOGCONFIG(TAG, "Empty I2C component");
 	ESP_LOGCONFIG(TAG, " component source: %s", this->component_source_);
+	ESP_LOGCONFIG(TAG, " component state: x%08x"this->component_state_);
 	ESP_LOGCONFIG(TAG, " address: x%02x", this->address_);
 	ESP_LOGCONFIG(TAG, " my_required_key: %s", this->my_required_key_.c_str());
 	ESP_LOGCONFIG(TAG, " my_optional_key: %d", this->my_optional_key_);
