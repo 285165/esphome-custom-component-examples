@@ -37,7 +37,7 @@ CONFIG_SCHEMA = cv.All(
         }
     )
     .extend(cv.COMPONENT_SCHEMA)
-    # .extend(cv.polling_component_schema("20s"))
+    .extend(cv.polling_component_schema("30s"))
     .extend(i2c.i2c_device_schema(CONF_I2C_ADDR)),
     cv.only_with_arduino,
 )
