@@ -14,8 +14,6 @@ namespace empty_i2c_component {
 class EmptyI2CComponent : public PollingComponent, public i2c::I2CDevice {
  public:
   EmptyI2CComponent();
-  void set_altitude_sensor(sensor::Sensor *altitude_sensor) { altitude_sensor_ = altitude_sensor; }
-  void set_satellites_sensor(sensor::Sensor *satellites_sensor) { satellites_sensor_ = satellites_sensor; }
 
   void setup() override;
   void loop() override;
@@ -33,6 +31,9 @@ class EmptyI2CComponent : public PollingComponent, public i2c::I2CDevice {
   //void set_my_required_key(std::string my_required_key) { this->my_required_key_ = std::move(my_required_key); };
   void set_my_required_key(const std::string &my_required_key) { this->my_required_key_ = my_required_key; };
   void set_my_optional_key(int my_optional_key) { this->my_optional_key_ = my_optional_key; }
+
+  void set_my_altitude_sensor(sensor::Sensor *altitude_sensor) { altitude_sensor_ = altitude_sensor; }
+  void set_my_satellites_sensor(sensor::Sensor *satellites_sensor) { satellites_sensor_ = satellites_sensor; }
   
  protected:
   uint8_t address_{0x00};  ///< store the address of the device on the bus
