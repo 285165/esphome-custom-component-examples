@@ -51,12 +51,12 @@ void EmptyI2CComponent::update() {
 
 void EmptyI2CComponent::loop() {
 	while (this->available() && !this->has_time_) {
-		if (tiny_gps_.altitude.isUpdated()) {
+		if (true /*tiny_gps_.altitude.isUpdated()*/) {
 			this->altitude_ = 100.2; //tiny_gps_.altitude.meters();
 			ESP_LOGD(TAG, "Altitude:");
 			ESP_LOGD(TAG, "  %f m", this->altitude_);
       	}
-		if (tiny_gps_.satellites.isUpdated()) {
+		if (true /*tiny_gps_.satellites.isUpdated()*/) {
 			this->satellites_ = 10; //tiny_gps_.satellites.value();
 			ESP_LOGD(TAG, "Satellites:");
 			ESP_LOGD(TAG, "  %d", this->satellites_);
