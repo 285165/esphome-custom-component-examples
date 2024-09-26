@@ -34,6 +34,8 @@ class GPS : public PollingComponent, public uart::UARTDevice {
   void set_altitude_sensor(sensor::Sensor *altitude_sensor) { altitude_sensor_ = altitude_sensor; }
   void set_satellites_sensor(sensor::Sensor *satellites_sensor) { satellites_sensor_ = satellites_sensor; }
   void set_hdop_sensor(sensor::Sensor *hdop_sensor) { hdop_sensor_ = hdop_sensor; }
+  void set_pdop_sensor(sensor::Sensor *pdop_sensor) { pdop_sensor_ = pdop_sensor; }
+  void set_vdop_sensor(sensor::Sensor *vdop_sensor) { vdop_sensor_ = vdop_sensor; }
 
   void register_listener(GPSListener *listener) {
     listener->parent_ = this;
@@ -54,6 +56,8 @@ class GPS : public PollingComponent, public uart::UARTDevice {
   float altitude_ = -1;
   int satellites_ = -1;
   float hdop_ = -1;
+  float pdop_ = -1;
+  float vdop_ = -1;
 
   sensor::Sensor *latitude_sensor_{nullptr};
   sensor::Sensor *longitude_sensor_{nullptr};
@@ -62,6 +66,8 @@ class GPS : public PollingComponent, public uart::UARTDevice {
   sensor::Sensor *altitude_sensor_{nullptr};
   sensor::Sensor *satellites_sensor_{nullptr};
   sensor::Sensor *hdop_sensor_{nullptr};
+  sensor::Sensor *pdop_sensor_{nullptr};
+  sensor::Sensor *vdop_sensor_{nullptr};
 
   bool has_time_{false};
   TinyGPSPlus tiny_gps_;
@@ -72,4 +78,3 @@ class GPS : public PollingComponent, public uart::UARTDevice {
 }  // namespace esphome
 
 #endif  // USE_ARDUINO
-// 285165

@@ -17,6 +17,8 @@ from esphome.const import (
 )
 
 CONF_HDOP  =   'hdop'
+CONF_PDOP  =   'pdop'
+CONF_VDOP  =   'vdop'
 
 DEPENDENCIES = ["uart"]
 AUTO_LOAD = ["sensor"]
@@ -61,9 +63,17 @@ CONFIG_SCHEMA = cv.All(
                 accuracy_decimals=2,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
+                 cv.Optional(CONF_PDOP): sensor.sensor_schema(
+                accuracy_decimals=2,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
+             cv.Optional(CONF_VDOP): sensor.sensor_schema(
+                accuracy_decimals=2,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),                    
         }
     )
-    .extend(cv.polling_component_schema("20s"))
+    .extend(cv.polling_component_schema("30s"))
     .extend(uart.UART_DEVICE_SCHEMA),
     cv.only_with_arduino,
 )
@@ -102,6 +112,14 @@ async def to_code(config):
     if CONF_HDOP in config:
         sens = await sensor.new_sensor(config[CONF_HDOP])
         cg.add(var.set_hdop_sensor(sens))
+
+    if CONF_PDOP in config:
+        sens = await sensor.new_sensor(config[CONF_PDOP])
+        cg.add(var.set_pdop_sensor(sens)) 
+
+    if CONF_VDOP in config:
+        sens = await sensor.new_sensor(config[CONF_VDOP])
+        cg.add(var.set_vdop_sensor(sens))                 
 
     # https://platformio.org/lib/show/1655/TinyGPSPlus
     #cg.add_library("285165/TinyGPSPlus", "1.0.4")
