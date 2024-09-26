@@ -50,8 +50,7 @@ async def to_code(config):
     cg.add(var.set_my_required_key(config[CONF_MY_REQUIRED_KEY]))
 
     if CONF_MY_OPTIONAL_KEY in config:
-        sens = await sensor.new_sensor(config[CONF_MY_OPTIONAL_KEY])
-        cg.add(var.set_my_optional_key(sens))
+        cg.add(var.set_my_optional_key(config[CONF_MY_OPTIONAL_KEY]))
 
     if CONF_MY_ALTITUDE in config:
         sens = await sensor.new_sensor(config[CONF_MY_ALTITUDE])
