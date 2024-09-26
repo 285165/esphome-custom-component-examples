@@ -84,6 +84,7 @@ void GPS::loop() {
         this->pdop_ = tiny_gps_.hdop.hdop();
         ESP_LOGD(TAG, "PDOP:");
         ESP_LOGD(TAG, "  %f", this->pdop_);
+      }
 
       if (tiny_gps_.hdop.isUpdated()) {
         this->vdop_ = tiny_gps_.hdop.hdop();
