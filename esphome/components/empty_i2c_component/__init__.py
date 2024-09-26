@@ -58,7 +58,7 @@ async def to_code(config):
 
     if CONF_MY_SATELITES in config:
         sens = await sensor.new_sensor(config[CONF_MY_SATELITES])
-        cg.add(var.set_satellites_sensor(sens))
+        cg.add(var.set_satelites_sensor(sens))
     
     # https://github.com/lewisxhe/XPowersLib
     cg.add_library("lewisxhe/XPowersLib", "0.2.6")
