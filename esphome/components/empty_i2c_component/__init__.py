@@ -31,7 +31,7 @@ CONFIG_SCHEMA = cv.Schema({
     #     accuracy_decimals=0,
     #     state_class=STATE_CLASS_MEASUREMENT,
     # ),
-}).extend(cv.COMPONENT_SCHEMA).extend(cv.polling_component_schema("30s")).extend(i2c.i2c_device_schema(CONF_I2C_ADDR)),cv.only_with_arduino,
+}).extend(cv.COMPONENT_SCHEMA).extend(i2c.i2c_device_schema(CONF_I2C_ADDR)),cv.only_with_arduino,
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
