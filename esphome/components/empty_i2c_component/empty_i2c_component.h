@@ -46,7 +46,7 @@ class EmptyI2CComponent : public PollingComponent, public i2c::I2CDevice {
   float altitude_ = -1;
   int satellites_ = -1;
 
-  sensor::Sensor *altitude_sensor_{nullptr};
+  sensor::Sensor *my_altitude_sensor_{nullptr};
   sensor::Sensor *satelites_sensor_{nullptr};
 };
 
