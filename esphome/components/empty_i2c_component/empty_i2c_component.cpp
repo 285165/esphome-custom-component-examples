@@ -47,11 +47,11 @@ void EmptyI2CComponent::loop() {
 	} else {
 		if ( i%1000 == 0) {
 		  status_set_warning("testowe ostrzeżenie");
-	      ESP_LOGW(TAG, " component state: x%08x",this->component_state_);
+	      ESP_LOGI(TAG, " component state: x%08x",this->component_state_);
 		}
 		if ( i%1000 == 501) {
 		  status_clear_warning();
-	  	  ESP_LOGW(TAG, " component state: x%08x",this->component_state_);
+	  	  ESP_LOGI(TAG, " component state: x%08x",this->component_state_);
 		}
 		i++;
 	}
