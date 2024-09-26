@@ -54,6 +54,7 @@ void EmptyI2CComponent::dump_config(){
 	ESP_LOGCONFIG(TAG, " address: x%02x", this->address_);
 	ESP_LOGCONFIG(TAG, " my_required_key: %s", this->my_required_key_.c_str());
 	ESP_LOGCONFIG(TAG, " my_optional_key: %d", this->my_optional_key_);
+	status_set_warning("testowe ostrzeżenie");
 }
 
 
