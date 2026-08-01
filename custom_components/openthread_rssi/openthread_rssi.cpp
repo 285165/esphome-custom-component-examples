@@ -41,6 +41,17 @@ void OpenThreadRSSIComponent::update() {
   int32_t neighbor_sum = 0;
   uint32_t neighbor_count = 0;
 
+  // Link Quality (0-3) / Link Margin (dB)
+  bool parent_lq_valid = false;
+  uint8_t parent_lq_in = 0;
+  uint8_t parent_lq_out = 0;
+  // Values taken from the best-RSSI neighbor
+  uint8_t neighbor_best_lq_in = 0;
+  uint8_t neighbor_best_margin = 0;
+  uint16_t neighbor_best_frame_err = 0;
+  uint16_t neighbor_best_msg_err = 0;
+  uint32_t neighbor_best_age = 0;
+
   // The OpenThread stack is not thread-safe; take the port lock before calling
   // any ot* API from this (ESPHome loop) task.
   esp_openthread_lock_acquire(portMAX_DELAY);
@@ -48,7 +59,7 @@ void OpenThreadRSSIComponent::update() {
   otDeviceRole role = otThreadGetDeviceRole(instance);
 
   // --- Parent RSSI (only meaningful for a Child) ---
-  if (this->parent_avg_rssi_sensor_ != nullptr) {
+  if (this->parent_avg_rssi_sensor_ != nullptr || this->parent_link_margin_sensor_ != nullptr) {
     if (otThreadGetParentAverageRssi(instance, &parent_avg) != OT_ERROR_NONE) {
       parent_avg = OT_RSSI_INVALID;
     }
@@ -59,8 +70,22 @@ void OpenThreadRSSIComponent::update() {
     }
   }
 
-  // --- Neighbor RSSI (Router/Leader/FTD or any device with neighbors) ---
-  if (this->neighbor_best_rssi_sensor_ != nullptr || this->neighbor_avg_rssi_sensor_ != nullptr) {
+  // --- Parent Link Quality In/Out (from otRouterInfo of the parent) ---
+  if (this->parent_link_quality_in_sensor_ != nullptr || this->parent_link_quality_out_sensor_ != nullptr) {
+    otRouterInfo parent_info;
+    if (otThreadGetParentInfo(instance, &parent_info) == OT_ERROR_NONE) {
+      parent_lq_in = parent_info.mLinkQualityIn;
+      parent_lq_out = parent_info.mLinkQualityOut;
+      parent_lq_valid = true;
+    }
+  }
+
+  // --- Neighbor RSSI / LQI / Link Margin (Router/Leader/FTD) ---
+  if (this->neighbor_best_rssi_sensor_ != nullptr || this->neighbor_avg_rssi_sensor_ != nullptr ||
+      this->neighbor_best_link_quality_sensor_ != nullptr || this->neighbor_best_link_margin_sensor_ != nullptr ||
+      this->neighbor_best_frame_error_rate_sensor_ != nullptr ||
+      this->neighbor_best_message_error_rate_sensor_ != nullptr || this->neighbor_count_sensor_ != nullptr ||
+      this->neighbor_best_age_sensor_ != nullptr) {
     otNeighborInfo info;
     otNeighborInfoIterator it = OT_NEIGHBOR_INFO_ITERATOR_INIT;
     while (otThreadGetNextNeighborInfo(instance, &it, &info) == OT_ERROR_NONE) {
@@ -75,14 +100,20 @@ void OpenThreadRSSIComponent::update() {
       neighbor_count++;
       if (neighbor_best == OT_RSSI_INVALID || rssi > neighbor_best) {
         neighbor_best = rssi;  // "best" = closest to 0 dBm
+        neighbor_best_lq_in = info.mLinkQualityIn;
+        neighbor_best_margin = info.mLinkMargin;
+        neighbor_best_frame_err = info.mFrameErrorRate;
+        neighbor_best_msg_err = info.mMessageErrorRate;
+        neighbor_best_age = info.mAge;
       }
     }
   }
 
   esp_openthread_lock_release();
 
-  ESP_LOGD(TAG, "role=%d parent_avg=%d parent_last=%d neighbors=%u best=%d", (int) role, (int) parent_avg,
-           (int) parent_last, neighbor_count, (int) neighbor_best);
+  ESP_LOGD(TAG, "role=%d parent_avg=%d parent_last=%d parentLQ(in/out)=%d/%d neighbors=%u best=%d lqIn=%d margin=%d",
+           (int) role, (int) parent_avg, (int) parent_last, (int) parent_lq_in, (int) parent_lq_out, neighbor_count,
+           (int) neighbor_best, (int) neighbor_best_lq_in, (int) neighbor_best_margin);
 
   // --- Publish ---
   if (this->parent_avg_rssi_sensor_ != nullptr) {
@@ -113,6 +144,55 @@ void OpenThreadRSSIComponent::update() {
       this->neighbor_avg_rssi_sensor_->publish_state(NAN);
     }
   }
+
+  // --- Parent Link Quality In/Out ---
+  if (this->parent_link_quality_in_sensor_ != nullptr) {
+    this->parent_link_quality_in_sensor_->publish_state(parent_lq_valid ? (float) parent_lq_in : NAN);
+  }
+  if (this->parent_link_quality_out_sensor_ != nullptr) {
+    this->parent_link_quality_out_sensor_->publish_state(parent_lq_valid ? (float) parent_lq_out : NAN);
+  }
+
+  // --- Parent Link Margin (derived from parent avg RSSI and noise floor) ---
+  if (this->parent_link_margin_sensor_ != nullptr) {
+    if (parent_avg != OT_RSSI_INVALID) {
+      int16_t margin = (int16_t) parent_avg - (int16_t) this->noise_floor_;
+      if (margin < 0) {
+        margin = 0;  // Link Margin is defined as a non-negative dB value
+      }
+      this->parent_link_margin_sensor_->publish_state((float) margin);
+    } else {
+      this->parent_link_margin_sensor_->publish_state(NAN);
+    }
+  }
+
+  // --- Neighbor (best link) Link Quality / Link Margin ---
+  if (this->neighbor_best_link_quality_sensor_ != nullptr) {
+    this->neighbor_best_link_quality_sensor_->publish_state(neighbor_count > 0 ? (float) neighbor_best_lq_in : NAN);
+  }
+  if (this->neighbor_best_link_margin_sensor_ != nullptr) {
+    this->neighbor_best_link_margin_sensor_->publish_state(neighbor_count > 0 ? (float) neighbor_best_margin : NAN);
+  }
+
+  // --- Neighbor (best link) Frame / Message error rates (uint16, 0xffff -> 100%) ---
+  if (this->neighbor_best_frame_error_rate_sensor_ != nullptr) {
+    this->neighbor_best_frame_error_rate_sensor_->publish_state(
+        neighbor_count > 0 ? (float) neighbor_best_frame_err * 100.0f / 65535.0f : NAN);
+  }
+  if (this->neighbor_best_message_error_rate_sensor_ != nullptr) {
+    this->neighbor_best_message_error_rate_sensor_->publish_state(
+        neighbor_count > 0 ? (float) neighbor_best_msg_err * 100.0f / 65535.0f : NAN);
+  }
+
+  // --- Neighbor count (always valid; 0 when no neighbors) ---
+  if (this->neighbor_count_sensor_ != nullptr) {
+    this->neighbor_count_sensor_->publish_state((float) neighbor_count);
+  }
+
+  // --- Age (seconds since last heard) of the best-RSSI neighbor ---
+  if (this->neighbor_best_age_sensor_ != nullptr) {
+    this->neighbor_best_age_sensor_->publish_state(neighbor_count > 0 ? (float) neighbor_best_age : NAN);
+  }
 }
 
 void OpenThreadRSSIComponent::dump_config() {
@@ -121,6 +201,16 @@ void OpenThreadRSSIComponent::dump_config() {
   LOG_SENSOR("  ", "Parent Last RSSI", this->parent_last_rssi_sensor_);
   LOG_SENSOR("  ", "Neighbor Best RSSI", this->neighbor_best_rssi_sensor_);
   LOG_SENSOR("  ", "Neighbor Avg RSSI", this->neighbor_avg_rssi_sensor_);
+  LOG_SENSOR("  ", "Parent Link Quality In", this->parent_link_quality_in_sensor_);
+  LOG_SENSOR("  ", "Parent Link Quality Out", this->parent_link_quality_out_sensor_);
+  LOG_SENSOR("  ", "Parent Link Margin", this->parent_link_margin_sensor_);
+  LOG_SENSOR("  ", "Neighbor Best Link Quality", this->neighbor_best_link_quality_sensor_);
+  LOG_SENSOR("  ", "Neighbor Best Link Margin", this->neighbor_best_link_margin_sensor_);
+  LOG_SENSOR("  ", "Neighbor Best Frame Error Rate", this->neighbor_best_frame_error_rate_sensor_);
+  LOG_SENSOR("  ", "Neighbor Best Message Error Rate", this->neighbor_best_message_error_rate_sensor_);
+  LOG_SENSOR("  ", "Neighbor Count", this->neighbor_count_sensor_);
+  LOG_SENSOR("  ", "Neighbor Best Age", this->neighbor_best_age_sensor_);
+  ESP_LOGCONFIG(TAG, "  Noise Floor: %d dBm", this->noise_floor_);
   LOG_UPDATE_INTERVAL(this);
 }
 
