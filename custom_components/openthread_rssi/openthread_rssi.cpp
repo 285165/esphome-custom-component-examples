@@ -45,6 +45,7 @@ void OpenThreadRSSIComponent::update() {
   bool parent_lq_valid = false;
   uint8_t parent_lq_in = 0;
   uint8_t parent_lq_out = 0;
+
   // Values taken from the best-RSSI neighbor
   uint8_t neighbor_best_lq_in = 0;
   uint8_t neighbor_best_margin = 0;
@@ -80,7 +81,7 @@ void OpenThreadRSSIComponent::update() {
     }
   }
 
-  // --- Neighbor RSSI / LQI / Link Margin (Router/Leader/FTD) ---
+  // --- Neighbor RSSI / LQI / Link Margin / error rates / age ---
   if (this->neighbor_best_rssi_sensor_ != nullptr || this->neighbor_avg_rssi_sensor_ != nullptr ||
       this->neighbor_best_link_quality_sensor_ != nullptr || this->neighbor_best_link_margin_sensor_ != nullptr ||
       this->neighbor_best_frame_error_rate_sensor_ != nullptr ||
@@ -115,34 +116,20 @@ void OpenThreadRSSIComponent::update() {
            (int) role, (int) parent_avg, (int) parent_last, (int) parent_lq_in, (int) parent_lq_out, neighbor_count,
            (int) neighbor_best, (int) neighbor_best_lq_in, (int) neighbor_best_margin);
 
-  // --- Publish ---
+  // --- Publish RSSI ---
   if (this->parent_avg_rssi_sensor_ != nullptr) {
-    if (parent_avg != OT_RSSI_INVALID) {
-      this->parent_avg_rssi_sensor_->publish_state(parent_avg);
-    } else {
-      this->parent_avg_rssi_sensor_->publish_state(NAN);
-    }
+    this->parent_avg_rssi_sensor_->publish_state(parent_avg != OT_RSSI_INVALID ? (float) parent_avg : NAN);
   }
   if (this->parent_last_rssi_sensor_ != nullptr) {
-    if (parent_last != OT_RSSI_INVALID) {
-      this->parent_last_rssi_sensor_->publish_state(parent_last);
-    } else {
-      this->parent_last_rssi_sensor_->publish_state(NAN);
-    }
+    this->parent_last_rssi_sensor_->publish_state(parent_last != OT_RSSI_INVALID ? (float) parent_last : NAN);
   }
   if (this->neighbor_best_rssi_sensor_ != nullptr) {
-    if (neighbor_count > 0 && neighbor_best != OT_RSSI_INVALID) {
-      this->neighbor_best_rssi_sensor_->publish_state(neighbor_best);
-    } else {
-      this->neighbor_best_rssi_sensor_->publish_state(NAN);
-    }
+    this->neighbor_best_rssi_sensor_->publish_state(
+        (neighbor_count > 0 && neighbor_best != OT_RSSI_INVALID) ? (float) neighbor_best : NAN);
   }
   if (this->neighbor_avg_rssi_sensor_ != nullptr) {
-    if (neighbor_count > 0) {
-      this->neighbor_avg_rssi_sensor_->publish_state((float) neighbor_sum / (float) neighbor_count);
-    } else {
-      this->neighbor_avg_rssi_sensor_->publish_state(NAN);
-    }
+    this->neighbor_avg_rssi_sensor_->publish_state(
+        neighbor_count > 0 ? (float) neighbor_sum / (float) neighbor_count : NAN);
   }
 
   // --- Parent Link Quality In/Out ---

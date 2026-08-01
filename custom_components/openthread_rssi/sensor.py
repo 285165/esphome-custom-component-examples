@@ -3,9 +3,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor
-from esphome.core import Device
 from esphome.const import (
-    CONF_DEVICE_ID,
     DEVICE_CLASS_DURATION,
     DEVICE_CLASS_SIGNAL_STRENGTH,
     ENTITY_CATEGORY_DIAGNOSTIC,
@@ -23,8 +21,16 @@ from . import (
     openthread_rssi_ns,  # noqa: F401
 )
 
+# NOTE on device_id:
+# `device_id:` is supported *per sensor* automatically, because every schema
+# below is built on `sensor.sensor_schema()`, which already includes the entity
+# base. This is exactly how the built-in `internal_temperature` platform gets
+# its `device_id` support -- no extra imports or code are required. Simply add
+# `device_id: <your_sub_device>` under any individual sensor below.
+
 DEPENDENCIES = ["openthread_rssi"]
 
+# RSSI (dBm)
 CONF_PARENT_AVG_RSSI = "parent_avg_rssi"
 CONF_PARENT_LAST_RSSI = "parent_last_rssi"
 CONF_NEIGHBOR_BEST_RSSI = "neighbor_best_rssi"
@@ -110,10 +116,6 @@ def _age_sensor_schema():
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_OPENTHREAD_RSSI_ID): cv.use_id(OpenThreadRSSIComponent),
-        # Platform-level sub-device assignment (like internal_temperature's
-        # per-entity device_id). When set, it is applied to every sensor below
-        # that does not define its own device_id.
-        cv.Optional(CONF_DEVICE_ID): cv.use_id(Device),
         cv.Optional(CONF_PARENT_AVG_RSSI): _rssi_sensor_schema(),
         cv.Optional(CONF_PARENT_LAST_RSSI): _rssi_sensor_schema(),
         cv.Optional(CONF_NEIGHBOR_BEST_RSSI): _rssi_sensor_schema(),
@@ -130,40 +132,9 @@ CONFIG_SCHEMA = cv.Schema(
     }
 )
 
-# Keys that hold a child sensor configuration (used to propagate device_id).
-_SENSOR_KEYS = [
-    CONF_PARENT_AVG_RSSI,
-    CONF_PARENT_LAST_RSSI,
-    CONF_NEIGHBOR_BEST_RSSI,
-    CONF_NEIGHBOR_AVG_RSSI,
-    CONF_PARENT_LINK_QUALITY_IN,
-    CONF_PARENT_LINK_QUALITY_OUT,
-    CONF_PARENT_LINK_MARGIN,
-    CONF_NEIGHBOR_BEST_LINK_QUALITY,
-    CONF_NEIGHBOR_BEST_LINK_MARGIN,
-    CONF_NEIGHBOR_BEST_FRAME_ERROR_RATE,
-    CONF_NEIGHBOR_BEST_MESSAGE_ERROR_RATE,
-    CONF_NEIGHBOR_COUNT,
-    CONF_NEIGHBOR_BEST_AGE,
-]
-
-
-def _propagate_device_id(config):
-    """Apply the platform-level device_id to every child sensor that does not
-    already define its own, mirroring the per-entity device_id behavior."""
-    device_id = config.get(CONF_DEVICE_ID)
-    if device_id is None:
-        return
-    for key in _SENSOR_KEYS:
-        if key in config and CONF_DEVICE_ID not in config[key]:
-            config[key][CONF_DEVICE_ID] = device_id
-
 
 async def to_code(config):
     parent = await cg.get_variable(config[CONF_OPENTHREAD_RSSI_ID])
-
-    # Fan the platform-level device_id out to each sub-sensor before creation.
-    _propagate_device_id(config)
 
     if CONF_PARENT_AVG_RSSI in config:
         sens = await sensor.new_sensor(config[CONF_PARENT_AVG_RSSI])
@@ -193,12 +164,14 @@ async def to_code(config):
     if CONF_NEIGHBOR_BEST_LINK_MARGIN in config:
         sens = await sensor.new_sensor(config[CONF_NEIGHBOR_BEST_LINK_MARGIN])
         cg.add(parent.set_neighbor_best_link_margin_sensor(sens))
+
     if CONF_NEIGHBOR_BEST_FRAME_ERROR_RATE in config:
         sens = await sensor.new_sensor(config[CONF_NEIGHBOR_BEST_FRAME_ERROR_RATE])
         cg.add(parent.set_neighbor_best_frame_error_rate_sensor(sens))
     if CONF_NEIGHBOR_BEST_MESSAGE_ERROR_RATE in config:
         sens = await sensor.new_sensor(config[CONF_NEIGHBOR_BEST_MESSAGE_ERROR_RATE])
         cg.add(parent.set_neighbor_best_message_error_rate_sensor(sens))
+
     if CONF_NEIGHBOR_COUNT in config:
         sens = await sensor.new_sensor(config[CONF_NEIGHBOR_COUNT])
         cg.add(parent.set_neighbor_count_sensor(sens))

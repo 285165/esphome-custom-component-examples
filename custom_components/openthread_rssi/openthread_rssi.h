@@ -8,7 +8,7 @@ namespace openthread_rssi {
 
 class OpenThreadRSSIComponent : public PollingComponent {
  public:
-  // Setters wired up from sensor.py
+  // RSSI (dBm)
   void set_parent_avg_rssi_sensor(sensor::Sensor *s) { this->parent_avg_rssi_sensor_ = s; }
   void set_parent_last_rssi_sensor(sensor::Sensor *s) { this->parent_last_rssi_sensor_ = s; }
   void set_neighbor_best_rssi_sensor(sensor::Sensor *s) { this->neighbor_best_rssi_sensor_ = s; }
@@ -49,6 +49,7 @@ class OpenThreadRSSIComponent : public PollingComponent {
   sensor::Sensor *parent_link_margin_sensor_{nullptr};
   sensor::Sensor *neighbor_best_link_quality_sensor_{nullptr};
   sensor::Sensor *neighbor_best_link_margin_sensor_{nullptr};
+
   sensor::Sensor *neighbor_best_frame_error_rate_sensor_{nullptr};
   sensor::Sensor *neighbor_best_message_error_rate_sensor_{nullptr};
   sensor::Sensor *neighbor_count_sensor_{nullptr};

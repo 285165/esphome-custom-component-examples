@@ -1,8 +1,8 @@
 """OpenThread RSSI external component for ESPHome.
 
-Exposes Parent RSSI (for Child devices) and the best/average Neighbor RSSI
-(for Router/Leader/FTD devices) as ESPHome sensors so the values can be
-published to Home Assistant.
+Exposes Parent/Neighbor RSSI, Link Quality, Link Margin, error rates and
+neighbor topology as ESPHome sensors so the values can be published to
+Home Assistant.
 """
 
 import esphome.codegen as cg
@@ -21,7 +21,6 @@ OpenThreadRSSIComponent = openthread_rssi_ns.class_(
 )
 
 CONF_OPENTHREAD_RSSI_ID = "openthread_rssi_id"
-
 CONF_NOISE_FLOOR = "noise_floor"
 
 CONFIG_SCHEMA = cv.Schema(
