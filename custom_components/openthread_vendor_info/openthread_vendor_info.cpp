@@ -9,6 +9,7 @@
 #include <openthread/netdiag.h>
 #include <openthread/thread.h>
 #include <openthread/ip6.h>
+#include <openthread/platform/radio.h>
 #endif
 
 namespace esphome {
@@ -47,38 +48,30 @@ void OpenThreadVendorInfoComponent::dump_config() {
                 this->vendor_model_.empty() ? "<not set>" : this->vendor_model_.c_str());
   ESP_LOGCONFIG(TAG, "  Vendor SW Version: %s",
                 this->vendor_sw_version_.empty() ? "<not set>" : this->vendor_sw_version_.c_str());
+  if (this->has_tx_power_) {
+    ESP_LOGCONFIG(TAG, "  TX Power: %d dBm", this->tx_power_dbm_);
+  } else {
+    ESP_LOGCONFIG(TAG, "  TX Power: <not set>");
+  }
 }
 
 void OpenThreadVendorInfoComponent::update() {
   if (this->applied_ && !this->set_on_every_retry_) {
     return;
   }
-
   if (this->apply_()) {
     this->applied_ = true;
-    ESP_LOGI(TAG, "OpenThread vendor diagnostic info applied");
+    ESP_LOGI(TAG, "OpenThread settings applied");
   }
 }
 
 bool OpenThreadVendorInfoComponent::apply_() {
-
 #ifndef USE_OPENTHREAD
-
   ESP_LOGW(TAG, "USE_OPENTHREAD not enabled");
   return false;
-
-#else
-
-#ifndef OPENTHREAD_CONFIG_NET_DIAG_VENDOR_INFO_SET_API_ENABLE
-
-  ESP_LOGW(TAG,
-           "OpenThread vendor info set API is not enabled in this ESP-IDF/OpenThread build");
-  return false;
-
 #else
 
   otInstance *instance = esp_openthread_get_instance();
-
   if (instance == nullptr) {
     ESP_LOGD(TAG, "OpenThread instance not ready");
     return false;
@@ -89,109 +82,80 @@ bool OpenThreadVendorInfoComponent::apply_() {
   bool ip6_enabled = otIp6IsEnabled(instance);
   otDeviceRole role = otThreadGetDeviceRole(instance);
 
-  ESP_LOGI(TAG,
-           "Thread state: ip6=%d role=%d",
-           ip6_enabled,
-           static_cast<int>(role));
+  ESP_LOGI(TAG, "Thread state: ip6=%d role=%d", ip6_enabled, static_cast<int>(role));
 
   if (!ip6_enabled) {
     esp_openthread_lock_release();
+    ESP_LOGD(TAG, "IPv6 not enabled yet");
     return false;
   }
 
-  ESP_LOGI(TAG,
-           "Configured Vendor Name='%s' len=%u",
-           vendor_name_.c_str(),
-           (unsigned) vendor_name_.length());
+  bool ok = true;
 
-  ESP_LOGI(TAG,
-           "Configured Vendor Model='%s' len=%u",
-           vendor_model_.c_str(),
-           (unsigned) vendor_model_.length());
+  // ---- Transmit power (platform radio API, dBm) ----
+  if (this->has_tx_power_) {
+    otError err = otPlatRadioSetTransmitPower(instance, this->tx_power_dbm_);
+    if (err != OT_ERROR_NONE) {
+      ESP_LOGW(TAG, "otPlatRadioSetTransmitPower(%d) failed: %d (%s)",
+               this->tx_power_dbm_, static_cast<int>(err), ot_error_to_string(err));
+      ok = false;
+    } else {
+      int8_t readback = 0;
+      if (otPlatRadioGetTransmitPower(instance, &readback) == OT_ERROR_NONE) {
+        ESP_LOGI(TAG, "TX power set to %d dBm (readback=%d dBm)",
+                 this->tx_power_dbm_, readback);
+      } else {
+        ESP_LOGI(TAG, "TX power set to %d dBm", this->tx_power_dbm_);
+      }
+    }
+  }
 
-  ESP_LOGI(TAG,
-           "Configured Vendor SW='%s' len=%u",
-           vendor_sw_version_.c_str(),
-           (unsigned) vendor_sw_version_.length());
-
-  const char *current_name = otThreadGetVendorName(instance);
-  const char *current_model = otThreadGetVendorModel(instance);
-  const char *current_sw = otThreadGetVendorSwVersion(instance);
-
-  ESP_LOGI(TAG,
-           "Current Vendor Name: %s",
-           current_name ? current_name : "<null>");
-
-  ESP_LOGI(TAG,
-           "Current Vendor Model: %s",
-           current_model ? current_model : "<null>");
-
-  ESP_LOGI(TAG,
-           "Current Vendor SW: %s",
-           current_sw ? current_sw : "<null>");
-
+  // ---- Vendor info (requires OPENTHREAD_CONFIG_NET_DIAG_VENDOR_INFO_SET_API_ENABLE) ----
+#ifdef OPENTHREAD_CONFIG_NET_DIAG_VENDOR_INFO_SET_API_ENABLE
   otError err;
 
-  if (!vendor_name_.empty()) {
-
-    err = otThreadSetVendorName(
-        instance,
-        vendor_name_.c_str());
-
+  if (!this->vendor_name_.empty()) {
+    err = otThreadSetVendorName(instance, this->vendor_name_.c_str());
     if (err != OT_ERROR_NONE) {
-
-      ESP_LOGW(TAG,
-               "otThreadSetVendorName failed: %d (%s)",
-               (int) err,
-               ot_error_to_string(err));
-
-      esp_openthread_lock_release();
-      return false;
+      ESP_LOGW(TAG, "otThreadSetVendorName('%s') failed: %d (%s)",
+               this->vendor_name_.c_str(), static_cast<int>(err), ot_error_to_string(err));
+      ok = false;
     }
   }
 
-  if (!vendor_model_.empty()) {
-
-    err = otThreadSetVendorModel(
-        instance,
-        vendor_model_.c_str());
-
+  if (!this->vendor_model_.empty()) {
+    err = otThreadSetVendorModel(instance, this->vendor_model_.c_str());
     if (err != OT_ERROR_NONE) {
-
-      ESP_LOGW(TAG,
-               "otThreadSetVendorModel failed: %d (%s)",
-               (int) err,
-               ot_error_to_string(err));
-
-      esp_openthread_lock_release();
-      return false;
+      ESP_LOGW(TAG, "otThreadSetVendorModel('%s') failed: %d (%s)",
+               this->vendor_model_.c_str(), static_cast<int>(err), ot_error_to_string(err));
+      ok = false;
     }
   }
 
-  if (!vendor_sw_version_.empty()) {
-
-    err = otThreadSetVendorSwVersion(
-        instance,
-        vendor_sw_version_.c_str());
-
+  if (!this->vendor_sw_version_.empty()) {
+    err = otThreadSetVendorSwVersion(instance, this->vendor_sw_version_.c_str());
     if (err != OT_ERROR_NONE) {
-
-      ESP_LOGW(TAG,
-               "otThreadSetVendorSwVersion failed: %d (%s)",
-               (int) err,
-               ot_error_to_string(err));
-
-      esp_openthread_lock_release();
-      return false;
+      ESP_LOGW(TAG, "otThreadSetVendorSwVersion('%s') failed: %d (%s)",
+               this->vendor_sw_version_.c_str(), static_cast<int>(err), ot_error_to_string(err));
+      ok = false;
     }
   }
+
+  if (!this->vendor_app_url_.empty()) {
+    err = otThreadSetVendorAppUrl(instance, this->vendor_app_url_.c_str());
+    if (err != OT_ERROR_NONE) {
+      ESP_LOGW(TAG, "otThreadSetVendorAppUrl('%s') failed: %d (%s)",
+               this->vendor_app_url_.c_str(), static_cast<int>(err), ot_error_to_string(err));
+      ok = false;
+    }
+  }
+#else
+  ESP_LOGW(TAG, "Vendor info set API not enabled in this build; skipping vendor fields");
+#endif
 
   esp_openthread_lock_release();
+  return ok;
 
-  ESP_LOGI(TAG, "Vendor information applied successfully");
-  return true;
-
-#endif
 #endif
 }
 
