@@ -63,14 +63,18 @@ void OpenThreadVendorInfoComponent::update() {
 bool OpenThreadVendorInfoComponent::apply_() {
 
 #ifndef USE_OPENTHREAD
+
   ESP_LOGW(TAG, "USE_OPENTHREAD not enabled");
   return false;
+
 #else
 
 #ifndef OPENTHREAD_CONFIG_NET_DIAG_VENDOR_INFO_SET_API_ENABLE
+
   ESP_LOGW(TAG,
            "OpenThread vendor info set API is not enabled in this ESP-IDF/OpenThread build");
   return false;
+
 #else
 
   otInstance *instance = esp_openthread_get_instance();
@@ -92,76 +96,92 @@ bool OpenThreadVendorInfoComponent::apply_() {
 
   if (!ip6_enabled) {
     esp_openthread_lock_release();
-    ESP_LOGD(TAG, "IPv6 not enabled yet");
     return false;
   }
 
-  if (role == OT_DEVICE_ROLE_DISABLED) {
-    esp_openthread_lock_release();
-    ESP_LOGD(TAG, "Thread role is DISABLED");
-    return false;
-  }
+  ESP_LOGI(TAG,
+           "Configured Vendor Name='%s' len=%u",
+           vendor_name_.c_str(),
+           (unsigned) vendor_name_.length());
 
-  otError err = OT_ERROR_NONE;
+  ESP_LOGI(TAG,
+           "Configured Vendor Model='%s' len=%u",
+           vendor_model_.c_str(),
+           (unsigned) vendor_model_.length());
+
+  ESP_LOGI(TAG,
+           "Configured Vendor SW='%s' len=%u",
+           vendor_sw_version_.c_str(),
+           (unsigned) vendor_sw_version_.length());
+
+  const char *current_name = otThreadGetVendorName(instance);
+  const char *current_model = otThreadGetVendorModel(instance);
+  const char *current_sw = otThreadGetVendorSwVersion(instance);
+
+  ESP_LOGI(TAG,
+           "Current Vendor Name: %s",
+           current_name ? current_name : "<null>");
+
+  ESP_LOGI(TAG,
+           "Current Vendor Model: %s",
+           current_model ? current_model : "<null>");
+
+  ESP_LOGI(TAG,
+           "Current Vendor SW: %s",
+           current_sw ? current_sw : "<null>");
+
+  otError err;
 
   if (!vendor_name_.empty()) {
-    err = otThreadSetVendorName(instance, vendor_name_.c_str());
+
+    err = otThreadSetVendorName(
+        instance,
+        vendor_name_.c_str());
 
     if (err != OT_ERROR_NONE) {
-      esp_openthread_lock_release();
 
       ESP_LOGW(TAG,
                "otThreadSetVendorName failed: %d (%s)",
-               static_cast<int>(err),
+               (int) err,
                ot_error_to_string(err));
 
+      esp_openthread_lock_release();
       return false;
     }
   }
 
   if (!vendor_model_.empty()) {
-    err = otThreadSetVendorModel(instance, vendor_model_.c_str());
+
+    err = otThreadSetVendorModel(
+        instance,
+        vendor_model_.c_str());
 
     if (err != OT_ERROR_NONE) {
-      esp_openthread_lock_release();
 
       ESP_LOGW(TAG,
                "otThreadSetVendorModel failed: %d (%s)",
-               static_cast<int>(err),
+               (int) err,
                ot_error_to_string(err));
 
+      esp_openthread_lock_release();
       return false;
     }
   }
 
   if (!vendor_sw_version_.empty()) {
-    err = otThreadSetVendorSwVersion(instance,
-                                     vendor_sw_version_.c_str());
+
+    err = otThreadSetVendorSwVersion(
+        instance,
+        vendor_sw_version_.c_str());
 
     if (err != OT_ERROR_NONE) {
-      esp_openthread_lock_release();
 
       ESP_LOGW(TAG,
                "otThreadSetVendorSwVersion failed: %d (%s)",
-               static_cast<int>(err),
+               (int) err,
                ot_error_to_string(err));
 
-      return false;
-    }
-  }
-
-  if (!vendor_app_url_.empty()) {
-    err = otThreadSetVendorAppUrl(instance,
-                                  vendor_app_url_.c_str());
-
-    if (err != OT_ERROR_NONE) {
       esp_openthread_lock_release();
-
-      ESP_LOGW(TAG,
-               "otThreadSetVendorAppUrl failed: %d (%s)",
-               static_cast<int>(err),
-               ot_error_to_string(err));
-
       return false;
     }
   }
