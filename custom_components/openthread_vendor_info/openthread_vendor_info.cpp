@@ -16,12 +16,37 @@ namespace openthread_vendor_info {
 
 static const char *const TAG = "openthread_vendor_info";
 
+static const char *ot_error_to_string(otError err) {
+  switch (err) {
+    case OT_ERROR_NONE:
+      return "OT_ERROR_NONE";
+    case OT_ERROR_FAILED:
+      return "OT_ERROR_FAILED";
+    case OT_ERROR_INVALID_ARGS:
+      return "OT_ERROR_INVALID_ARGS";
+    case OT_ERROR_INVALID_STATE:
+      return "OT_ERROR_INVALID_STATE";
+    case OT_ERROR_NO_BUFS:
+      return "OT_ERROR_NO_BUFS";
+    case OT_ERROR_NOT_IMPLEMENTED:
+      return "OT_ERROR_NOT_IMPLEMENTED";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 void OpenThreadVendorInfoComponent::setup() {
   ESP_LOGCONFIG(TAG, "OpenThread Vendor Info external component starting");
 }
 
 void OpenThreadVendorInfoComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "OpenThread Vendor Info:");
+  ESP_LOGCONFIG(TAG, "  Vendor Name: %s",
+                this->vendor_name_.empty() ? "<not set>" : this->vendor_name_.c_str());
+  ESP_LOGCONFIG(TAG, "  Vendor Model: %s",
+                this->vendor_model_.empty() ? "<not set>" : this->vendor_model_.c_str());
+  ESP_LOGCONFIG(TAG, "  Vendor SW Version: %s",
+                this->vendor_sw_version_.empty() ? "<not set>" : this->vendor_sw_version_.c_str());
 }
 
 void OpenThreadVendorInfoComponent::update() {
@@ -38,39 +63,36 @@ void OpenThreadVendorInfoComponent::update() {
 bool OpenThreadVendorInfoComponent::apply_() {
 
 #ifndef USE_OPENTHREAD
+  ESP_LOGW(TAG, "USE_OPENTHREAD not enabled");
   return false;
 #else
 
 #ifndef OPENTHREAD_CONFIG_NET_DIAG_VENDOR_INFO_SET_API_ENABLE
-
   ESP_LOGW(TAG,
            "OpenThread vendor info set API is not enabled in this ESP-IDF/OpenThread build");
   return false;
-
 #else
 
   otInstance *instance = esp_openthread_get_instance();
 
   if (instance == nullptr) {
-    ESP_LOGD(TAG, "OpenThread instance is null");
+    ESP_LOGD(TAG, "OpenThread instance not ready");
     return false;
   }
 
   esp_openthread_lock_acquire(portMAX_DELAY);
 
   bool ip6_enabled = otIp6IsEnabled(instance);
-  bool thread_enabled = otThreadIsEnabled(instance);
   otDeviceRole role = otThreadGetDeviceRole(instance);
 
   ESP_LOGI(TAG,
-           "Thread state: ip6=%d thread=%d role=%d",
+           "Thread state: ip6=%d role=%d",
            ip6_enabled,
-           thread_enabled,
-           role);
+           static_cast<int>(role));
 
-  if (!ip6_enabled || !thread_enabled) {
+  if (!ip6_enabled) {
     esp_openthread_lock_release();
-    ESP_LOGD(TAG, "Thread stack not fully initialized yet");
+    ESP_LOGD(TAG, "IPv6 not enabled yet");
     return false;
   }
 
@@ -80,16 +102,19 @@ bool OpenThreadVendorInfoComponent::apply_() {
     return false;
   }
 
-  otError err;
+  otError err = OT_ERROR_NONE;
 
   if (!vendor_name_.empty()) {
     err = otThreadSetVendorName(instance, vendor_name_.c_str());
 
     if (err != OT_ERROR_NONE) {
       esp_openthread_lock_release();
+
       ESP_LOGW(TAG,
-               "otThreadSetVendorName failed: %d",
-               static_cast<int>(err));
+               "otThreadSetVendorName failed: %d (%s)",
+               static_cast<int>(err),
+               ot_error_to_string(err));
+
       return false;
     }
   }
@@ -99,9 +124,12 @@ bool OpenThreadVendorInfoComponent::apply_() {
 
     if (err != OT_ERROR_NONE) {
       esp_openthread_lock_release();
+
       ESP_LOGW(TAG,
-               "otThreadSetVendorModel failed: %d",
-               static_cast<int>(err));
+               "otThreadSetVendorModel failed: %d (%s)",
+               static_cast<int>(err),
+               ot_error_to_string(err));
+
       return false;
     }
   }
@@ -112,9 +140,12 @@ bool OpenThreadVendorInfoComponent::apply_() {
 
     if (err != OT_ERROR_NONE) {
       esp_openthread_lock_release();
+
       ESP_LOGW(TAG,
-               "otThreadSetVendorSwVersion failed: %d",
-               static_cast<int>(err));
+               "otThreadSetVendorSwVersion failed: %d (%s)",
+               static_cast<int>(err),
+               ot_error_to_string(err));
+
       return false;
     }
   }
@@ -125,9 +156,12 @@ bool OpenThreadVendorInfoComponent::apply_() {
 
     if (err != OT_ERROR_NONE) {
       esp_openthread_lock_release();
+
       ESP_LOGW(TAG,
-               "otThreadSetVendorAppUrl failed: %d",
-               static_cast<int>(err));
+               "otThreadSetVendorAppUrl failed: %d (%s)",
+               static_cast<int>(err),
+               ot_error_to_string(err));
+
       return false;
     }
   }
