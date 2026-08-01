@@ -1,0 +1,46 @@
+esphome:
+  name: c6-thread-node
+
+esp32:
+  board: esp32-c6-devkitc-1
+  variant: esp32c6
+  framework:
+    type: esp-idf
+
+logger:
+
+# Home Assistant / Thread devices are usually exposed over the native API.
+api:
+
+# --- OpenThread stack (Matter/Thread) ---
+openthread:
+  # tid: ...        # your dataset / joining config here
+  # network_name / channel / etc. as you already have it
+
+# --- Pull the RSSI external component from your GitHub repo ---
+external_components:
+  - source:
+      type: git
+      url: https://github.com/285165/esphome-custom-component-examples
+      ref: main
+    # path inside the repo where "components/" lives
+    components: [openthread_rssi]
+    refresh: 0s   # always re-fetch on compile; set to e.g. 1d to cache
+
+# --- Instantiate the component ---
+openthread_rssi:
+  id: ot_rssi
+  update_interval: 30s
+
+# --- Expose the sensors to Home Assistant ---
+sensor:
+  - platform: openthread_rssi
+    openthread_rssi_id: ot_rssi
+    parent_avg_rssi:
+      name: "Thread Parent Avg RSSI"
+    parent_last_rssi:
+      name: "Thread Parent Last RSSI"
+    neighbor_best_rssi:
+      name: "Thread Neighbor Best RSSI"
+    neighbor_avg_rssi:
+      name: "Thread Neighbor Avg RSSI"
