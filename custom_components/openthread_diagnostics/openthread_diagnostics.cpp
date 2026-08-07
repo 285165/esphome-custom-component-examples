@@ -12,6 +12,7 @@
 #include <openthread/instance.h>
 #include <openthread/ip6.h>
 #include <openthread/link.h>
+#include <openthread/platform/radio.h>
 #include <openthread/thread.h>
 #define OTD_HAS_OPENTHREAD 1
 #else
@@ -92,7 +93,7 @@ void OpenThreadDiagnostics::update() {
   if (rloc16_sensor_ != nullptr) rloc16_sensor_->publish_state(otThreadGetRloc16(instance));
 
   int8_t tx_power = 0;
-  if (tx_power_sensor_ != nullptr && otLinkGetTransmitPower(instance, &tx_power) == OT_ERROR_NONE) {
+  if (tx_power_sensor_ != nullptr && otPlatRadioGetTransmitPower(instance, &tx_power) == OT_ERROR_NONE) {
     tx_power_sensor_->publish_state(tx_power);
   }
 
