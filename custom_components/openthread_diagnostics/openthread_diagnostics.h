@@ -36,6 +36,7 @@ class OpenThreadDiagnostics : public PollingComponent {
   void set_partition_id_text_sensor(text_sensor::TextSensor *sensor) { partition_id_text_sensor_ = sensor; }
   void set_leader_router_id_text_sensor(text_sensor::TextSensor *sensor) { leader_router_id_text_sensor_ = sensor; }
   void set_rloc16_text_sensor(text_sensor::TextSensor *sensor) { rloc16_text_sensor_ = sensor; }
+  void set_mesh_local_eid_text_sensor(text_sensor::TextSensor *sensor) { mesh_local_eid_text_sensor_ = sensor; }
   void set_ip_addresses_text_sensor(text_sensor::TextSensor *sensor) { ip_addresses_text_sensor_ = sensor; }
   void set_mesh_local_address_text_sensor(text_sensor::TextSensor *sensor) { mesh_local_address_text_sensor_ = sensor; }
   void set_link_local_address_text_sensor(text_sensor::TextSensor *sensor) { link_local_address_text_sensor_ = sensor; }
@@ -65,6 +66,7 @@ class OpenThreadDiagnostics : public PollingComponent {
   text_sensor::TextSensor *partition_id_text_sensor_{nullptr};
   text_sensor::TextSensor *leader_router_id_text_sensor_{nullptr};
   text_sensor::TextSensor *rloc16_text_sensor_{nullptr};
+  text_sensor::TextSensor *mesh_local_eid_text_sensor_{nullptr};
   text_sensor::TextSensor *ip_addresses_text_sensor_{nullptr};
   text_sensor::TextSensor *mesh_local_address_text_sensor_{nullptr};
   text_sensor::TextSensor *link_local_address_text_sensor_{nullptr};

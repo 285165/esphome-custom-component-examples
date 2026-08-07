@@ -107,11 +107,19 @@ void OpenThreadDiagnostics::update() {
 
   if (channel_sensor_ != nullptr) channel_sensor_->publish_state(otLinkGetChannel(instance));
 
-  // These Thread identifiers are published as text sensors in hexadecimal format.
+  // Thread identifiers published as HEX text sensors.
   if (pan_id_text_sensor_ != nullptr) pan_id_text_sensor_->publish_state(hex_u16(otLinkGetPanId(instance)));
   if (partition_id_text_sensor_ != nullptr) partition_id_text_sensor_->publish_state(hex_u32(otThreadGetPartitionId(instance)));
   if (leader_router_id_text_sensor_ != nullptr) leader_router_id_text_sensor_->publish_state(hex_u8(otThreadGetLeaderRouterId(instance)));
   if (rloc16_text_sensor_ != nullptr) rloc16_text_sensor_->publish_state(hex_u16(otThreadGetRloc16(instance)));
+
+  // Stable Thread Mesh Local EID from OpenThread API.
+  if (mesh_local_eid_text_sensor_ != nullptr) {
+    const otIp6Address *mleid = otThreadGetMeshLocalEid(instance);
+    if (mleid != nullptr) {
+      mesh_local_eid_text_sensor_->publish_state(ip6_to_string(mleid));
+    }
+  }
 
   int8_t tx_power = 0;
   if (tx_power_sensor_ != nullptr && otPlatRadioGetTransmitPower(instance, &tx_power) == OT_ERROR_NONE) {

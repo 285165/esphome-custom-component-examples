@@ -12,6 +12,7 @@ CONF_PAN_ID = "pan_id"
 CONF_PARTITION_ID = "partition_id"
 CONF_LEADER_ROUTER_ID = "leader_router_id"
 CONF_RLOC16 = "rloc16"
+CONF_MESH_LOCAL_EID = "mesh_local_eid"
 CONF_IP_ADDRESSES = "ip_addresses"
 CONF_MESH_LOCAL_ADDRESS = "mesh_local_address"
 CONF_LINK_LOCAL_ADDRESS = "link_local_address"
@@ -32,6 +33,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_PARTITION_ID): diag_text_sensor_schema(),
         cv.Optional(CONF_LEADER_ROUTER_ID): diag_text_sensor_schema(),
         cv.Optional(CONF_RLOC16): diag_text_sensor_schema(),
+        cv.Optional(CONF_MESH_LOCAL_EID): diag_text_sensor_schema(),
         cv.Optional(CONF_IP_ADDRESSES): diag_text_sensor_schema(),
         cv.Optional(CONF_MESH_LOCAL_ADDRESS): diag_text_sensor_schema(),
         cv.Optional(CONF_LINK_LOCAL_ADDRESS): diag_text_sensor_schema(),
@@ -52,6 +54,7 @@ async def to_code(config):
         CONF_PARTITION_ID: var.set_partition_id_text_sensor,
         CONF_LEADER_ROUTER_ID: var.set_leader_router_id_text_sensor,
         CONF_RLOC16: var.set_rloc16_text_sensor,
+        CONF_MESH_LOCAL_EID: var.set_mesh_local_eid_text_sensor,
         CONF_IP_ADDRESSES: var.set_ip_addresses_text_sensor,
         CONF_MESH_LOCAL_ADDRESS: var.set_mesh_local_address_text_sensor,
         CONF_LINK_LOCAL_ADDRESS: var.set_link_local_address_text_sensor,
