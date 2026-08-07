@@ -78,11 +78,11 @@ TEXT_SENSOR_KEYS = {
 }
 
 
-def diag_sensor_schema(**kw**gs):
-    kwargs.setdefault("accur**y_decimals", 0)
-    return sensor**ensor_schema(
-        entity_cate**ry=ENTITY_CATEGORY_DIAGNOSTIC,
-  **    **kwargs,
+def diag_sensor_schema(**kwargs):
+    kwargs.setdefault("accuracy_decimals", 0)
+    return sensor.sensor_schema(
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        **kwargs,
     )
 
 CONFIG_SCHEMA = cv.Schema(
