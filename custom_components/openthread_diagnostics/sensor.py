@@ -5,10 +5,12 @@ from esphome.const import (
     CONF_ID,
     DEVICE_CLASS_SIGNAL_STRENGTH,
     ENTITY_CATEGORY_DIAGNOSTIC,
+    STATE_CLASS_MEASUREMENT,
     UNIT_DECIBEL,
     UNIT_DECIBEL_MILLIWATT,
     UNIT_PERCENT,
 )
+
 from . import OpenThreadDiagnostics
 
 CONF_CHANNEL = "channel"
@@ -30,6 +32,8 @@ CONF_MAC_TX_RETRY = "mac_tx_retry"
 
 def diag_sensor_schema(**kwargs):
     kwargs.setdefault("accuracy_decimals", 0)
+    kwargs.setdefault("state_class", STATE_CLASS_MEASUREMENT)
+
     return sensor.sensor_schema(
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         **kwargs,
@@ -39,35 +43,52 @@ def diag_sensor_schema(**kwargs):
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(OpenThreadDiagnostics),
+
         cv.Optional(CONF_CHANNEL): diag_sensor_schema(),
+
         cv.Optional(CONF_TX_POWER): diag_sensor_schema(
             unit_of_measurement=UNIT_DECIBEL_MILLIWATT,
             device_class=DEVICE_CLASS_SIGNAL_STRENGTH,
         ),
+
         cv.Optional(CONF_PARENT_RSSI): diag_sensor_schema(
             unit_of_measurement=UNIT_DECIBEL_MILLIWATT,
             device_class=DEVICE_CLASS_SIGNAL_STRENGTH,
         ),
+
         cv.Optional(CONF_PARENT_AVERAGE_RSSI): diag_sensor_schema(
             unit_of_measurement=UNIT_DECIBEL_MILLIWATT,
             device_class=DEVICE_CLASS_SIGNAL_STRENGTH,
         ),
-        cv.Optional(CONF_PARENT_LINK_MARGIN): diag_sensor_schema(unit_of_measurement=UNIT_DECIBEL),
+
+        cv.Optional(CONF_PARENT_LINK_MARGIN): diag_sensor_schema(
+            unit_of_measurement=UNIT_DECIBEL,
+        ),
+
         cv.Optional(CONF_PARENT_LINK_QUALITY): diag_sensor_schema(),
+
         cv.Optional(CONF_PARENT_AGE): diag_sensor_schema(),
+
         cv.Optional(CONF_FRAME_ERROR_RATE): diag_sensor_schema(
             unit_of_measurement=UNIT_PERCENT,
             accuracy_decimals=2,
         ),
+
         cv.Optional(CONF_MESSAGE_ERROR_RATE): diag_sensor_schema(
             unit_of_measurement=UNIT_PERCENT,
             accuracy_decimals=2,
         ),
+
         cv.Optional(CONF_NEIGHBOR_COUNT): diag_sensor_schema(),
+
         cv.Optional(CONF_CHILD_COUNT): diag_sensor_schema(),
+
         cv.Optional(CONF_MAC_TX_TOTAL): diag_sensor_schema(),
+
         cv.Optional(CONF_MAC_RX_TOTAL): diag_sensor_schema(),
+
         cv.Optional(CONF_MAC_TX_ERR_CCA): diag_sensor_schema(),
+
         cv.Optional(CONF_MAC_TX_RETRY): diag_sensor_schema(),
     }
 ).extend(cv.polling_component_schema("30s"))
