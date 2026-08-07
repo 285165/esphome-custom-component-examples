@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <string>
 
 #if defined(USE_ESP32) && __has_include("esp_openthread.h")
 #include "esp_openthread.h"
@@ -50,6 +51,24 @@ static std::string ip6_to_string(const otIp6Address *addr) {
   return std::string(buf);
 }
 
+static std::string hex_u8(uint8_t value) {
+  char buf[5];
+  snprintf(buf, sizeof(buf), "0x%02X", static_cast<unsigned int>(value));
+  return std::string(buf);
+}
+
+static std::string hex_u16(uint16_t value) {
+  char buf[7];
+  snprintf(buf, sizeof(buf), "0x%04X", static_cast<unsigned int>(value));
+  return std::string(buf);
+}
+
+static std::string hex_u32(uint32_t value) {
+  char buf[11];
+  snprintf(buf, sizeof(buf), "0x%08lX", static_cast<unsigned long>(value));
+  return std::string(buf);
+}
+
 static float error_rate_to_percent(uint16_t value) {
   return (static_cast<float>(value) * 100.0f) / 65535.0f;
 }
@@ -87,10 +106,12 @@ void OpenThreadDiagnostics::update() {
   if (ext_address_text_sensor_ != nullptr) ext_address_text_sensor_->publish_state(ext_address_to_string(otLinkGetExtendedAddress(instance)));
 
   if (channel_sensor_ != nullptr) channel_sensor_->publish_state(otLinkGetChannel(instance));
-  if (pan_id_sensor_ != nullptr) pan_id_sensor_->publish_state(otLinkGetPanId(instance));
-  if (partition_id_sensor_ != nullptr) partition_id_sensor_->publish_state(otThreadGetPartitionId(instance));
-  if (leader_router_id_sensor_ != nullptr) leader_router_id_sensor_->publish_state(otThreadGetLeaderRouterId(instance));
-  if (rloc16_sensor_ != nullptr) rloc16_sensor_->publish_state(otThreadGetRloc16(instance));
+
+  // These Thread identifiers are published as text sensors in hexadecimal format.
+  if (pan_id_text_sensor_ != nullptr) pan_id_text_sensor_->publish_state(hex_u16(otLinkGetPanId(instance)));
+  if (partition_id_text_sensor_ != nullptr) partition_id_text_sensor_->publish_state(hex_u32(otThreadGetPartitionId(instance)));
+  if (leader_router_id_text_sensor_ != nullptr) leader_router_id_text_sensor_->publish_state(hex_u8(otThreadGetLeaderRouterId(instance)));
+  if (rloc16_text_sensor_ != nullptr) rloc16_text_sensor_->publish_state(hex_u16(otThreadGetRloc16(instance)));
 
   int8_t tx_power = 0;
   if (tx_power_sensor_ != nullptr && otPlatRadioGetTransmitPower(instance, &tx_power) == OT_ERROR_NONE) {
