@@ -35,7 +35,7 @@ class M5StackU153 : public PollingComponent, public i2c::I2CDevice {
   static constexpr uint8_t REG_BUTTON_BASE = 0x50;
   static constexpr uint8_t REG_SWITCH = 0x60;
   static constexpr uint8_t REG_RGB_BASE = 0x70;
-  static constexpr uint8_t REG_FIRMWARE_VERSION = 0xFE;
+  static constexpr uint8_t REG_FIRMWARE_VERSION = 0xF0;
 
   bool read_register_bytes_(uint8_t reg, uint8_t *data, size_t len,
                             bool warn = true);
