@@ -1,12 +1,14 @@
 #pragma once
+
 #include <array>
 #include <cstdint>
-#include "esphome/core/component.h"
-#include "esphome/components/i2c/i2c.h"
-#include "esphome/components/sensor/sensor.h"
+
 #include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/i2c/i2c.h"
 #include "esphome/components/light/light_output.h"
 #include "esphome/components/light/light_state.h"
+#include "esphome/components/sensor/sensor.h"
+#include "esphome/core/component.h"
 
 namespace esphome {
 namespace m5stack_8angle {
@@ -19,10 +21,10 @@ class M5Stack8Angle : public PollingComponent, public i2c::I2CDevice {
   float get_setup_priority() const override { return setup_priority::DATA; }
 
   void set_channel_sensor(uint8_t channel, sensor::Sensor *entity, uint8_t bit_depth);
-  void set_sw_sensor(binary_sensor::BinarySensor *entity) { sw_sensor_ = entity; }
+  void set_sw_sensor(binary_sensor::BinarySensor *entity) { this->sw_sensor_ = entity; }
   void set_change_i2c_address_to(uint8_t address) {
-    change_i2c_address_ = true;
-    new_i2c_address_ = address;
+    this->change_i2c_address_ = true;
+    this->new_i2c_address_ = address;
   }
   bool set_led(uint8_t index, uint8_t red, uint8_t green, uint8_t blue, uint8_t brightness);
 
@@ -59,7 +61,8 @@ class M5Stack8Angle : public PollingComponent, public i2c::I2CDevice {
 
 class M5Stack8AngleLight : public light::LightOutput {
  public:
-  M5Stack8AngleLight(M5Stack8Angle *parent, uint8_t index) : parent_(parent), index_(index) {}
+  M5Stack8AngleLight(M5Stack8Angle *parent, uint8_t index)
+      : parent_(parent), index_(index) {}
   light::LightTraits get_traits() override;
   void write_state(light::LightState *state) override;
  protected:

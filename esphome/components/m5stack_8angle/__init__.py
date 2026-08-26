@@ -33,7 +33,7 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Optional(CONF_CHANGE_I2C_ADDRESS_TO): cv.i2c_address,
     cv.Optional(CONF_CHANNELS, default=[]): cv.ensure_list(CHANNEL_SCHEMA),
     cv.Optional(CONF_SW): binary_sensor.binary_sensor_schema(icon="mdi:toggle-switch"),
-}).extend(cv.polling_component_schema("100ms")).extend(
+}).extend(cv.polling_component_schema("500ms")).extend(
     i2c.i2c_device_schema(0x43)
 )
 
