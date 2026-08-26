@@ -11,7 +11,6 @@ external_components:
 m5stack_8encoder:
   id: encoder8
   address: 0x41
-  increment: 1
   update_interval: 200ms
 
   encoders:
@@ -77,3 +76,67 @@ m5stack_8encoder:
 
   reset_all:
     name: "Reset CH1-CH8"
+    
+light:
+  - platform: m5stack_8encoder
+    m5stack_8encoder_id: encoder8
+    number: 0
+    name: "CH1 LED"
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+
+  - platform: m5stack_8encoder
+    m5stack_8encoder_id: encoder8
+    number: 1
+    name: "CH2 LED"
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+
+  - platform: m5stack_8encoder
+    m5stack_8encoder_id: encoder8
+    number: 2
+    name: "CH3 LED"
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+
+  - platform: m5stack_8encoder
+    m5stack_8encoder_id: encoder8
+    number: 3
+    name: "CH4 LED"
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+
+  - platform: m5stack_8encoder
+    m5stack_8encoder_id: encoder8
+    number: 4
+    name: "CH5 LED"
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+
+  - platform: m5stack_8encoder
+    m5stack_8encoder_id: encoder8
+    number: 5
+    name: "CH6 LED"
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+
+  - platform: m5stack_8encoder
+    m5stack_8encoder_id: encoder8
+    number: 6
+    name: "CH7 LED"
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+
+  - platform: m5stack_8encoder
+    m5stack_8encoder_id: encoder8
+    number: 7
+    name: "CH8 LED"
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+
+  - platform: m5stack_8encoder
+    m5stack_8encoder_id: encoder8
+    number: 8
+    name: "SW LED"
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s

@@ -22,10 +22,13 @@ class M5Stack8Encoder : public PollingComponent, public i2c::I2CDevice {
   float get_setup_priority() const override { return setup_priority::DATA; }
 
   void set_encoder_sensor(uint8_t index, sensor::Sensor *entity);
+  void set_increment_sensor(uint8_t index, sensor::Sensor *entity) {
+    if (index < this->increment_sensors_.size())
+      this->increment_sensors_[index] = entity;
+  }
   void set_button_sensor(uint8_t index, binary_sensor::BinarySensor *entity,
                          uint8_t pressed_value);
   void set_sw_sensor(binary_sensor::BinarySensor *entity) { this->sw_sensor_ = entity; }
-  void set_increment(int32_t increment) { this->increment_ = increment; }
   void set_change_i2c_address_to(uint8_t address) {
     this->change_i2c_address_ = true;
     this->new_i2c_address_ = address;
@@ -45,15 +48,13 @@ class M5Stack8Encoder : public PollingComponent, public i2c::I2CDevice {
   static constexpr uint8_t REG_I2C_ADDRESS = 0xFF;
 
   bool read_regs_(uint8_t reg, uint8_t *data, uint8_t len);
-  bool write_int32_(uint8_t reg, int32_t value);
-  bool configure_increments_();
   bool change_device_address_();
 
   bool present_{false};
-  int32_t increment_{1};
   bool change_i2c_address_{false};
   uint8_t new_i2c_address_{0x41};
   std::array<sensor::Sensor *, 8> encoder_sensors_{};
+  std::array<sensor::Sensor *, 8> increment_sensors_{};
   std::array<binary_sensor::BinarySensor *, 8> button_sensors_{};
   std::array<uint8_t, 8> button_pressed_values_{};
   binary_sensor::BinarySensor *sw_sensor_{nullptr};
