@@ -11,6 +11,7 @@ MULTI_CONF = True
 CONF_CHANNELS = "channels"
 CONF_BIT_DEPTH = "bit_depth"
 CONF_SW = "sw"
+CONF_FAILURE_THRESHOLD = "failure_threshold"
 CONF_CHANGE_I2C_ADDRESS_TO = "change_i2c_address_to"
 
 m5stack_8angle_ns = cg.esphome_ns.namespace("m5stack_8angle")
@@ -30,6 +31,7 @@ CHANNEL_SCHEMA = sensor.sensor_schema(
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(M5Stack8Angle),
+    cv.Optional(CONF_FAILURE_THRESHOLD, default=5): cv.int_range(min=1, max=255),
     cv.Optional(CONF_CHANGE_I2C_ADDRESS_TO): cv.i2c_address,
     cv.Optional(CONF_CHANNELS, default=[]): cv.ensure_list(CHANNEL_SCHEMA),
     cv.Optional(CONF_SW): binary_sensor.binary_sensor_schema(icon="mdi:toggle-switch"),
@@ -53,6 +55,7 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await i2c.register_i2c_device(var, config)
+    cg.add(var.set_failure_threshold(config[CONF_FAILURE_THRESHOLD]))
 
     if CONF_CHANGE_I2C_ADDRESS_TO in config:
         cg.add(var.set_change_i2c_address_to(config[CONF_CHANGE_I2C_ADDRESS_TO]))
