@@ -19,9 +19,11 @@ class M5StackU153 : public PollingComponent, public i2c::I2CDevice {
   void set_switch_sensor(binary_sensor::BinarySensor *s) { switch_ = s; }
   bool set_led(uint8_t i, uint8_t r, uint8_t g, uint8_t b);
  protected:
-  // Odczyt zgodny z biblioteka Arduino M5Stack: write(reg)+STOP, potem osobny read.
+  // Odczyt zgodny z biblioteka Arduino M5Stack: write(reg) konczy sie STOP
+  // (domyslnie), potem osobny read jako nowa transakcja START..STOP.
   // NIE uzywa repeated-start, ktorego STM32 w U153 nie akceptuje.
   bool read_regs_(uint8_t reg, uint8_t *data, uint8_t len);
+  bool present_{false};
   std::array<sensor::Sensor *, 8> encoders_{};
   std::array<binary_sensor::BinarySensor *, 8> buttons_{};
   std::array<uint8_t, 8> pressed_{};
