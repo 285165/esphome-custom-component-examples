@@ -16,9 +16,7 @@ static constexpr uint8_t REG_ENCODER = 0x00;
 static constexpr uint8_t REG_BUTTON = 0x20;
 static constexpr uint8_t REG_TOGGLE = 0x30;
 static constexpr uint8_t REG_LED = 0x40;
-static constexpr uint8_t REG_BRIGHTNESS = 0x50;
 static constexpr uint8_t REG_FW_VERSION = 0xFE;
-static constexpr uint8_t REG_I2C_ADDRESS = 0xFF;
 
 class M5StackU153 : public PollingComponent, public i2c::I2CDevice {
  public:
@@ -27,25 +25,22 @@ class M5StackU153 : public PollingComponent, public i2c::I2CDevice {
   void dump_config() override;
   float get_setup_priority() const override { return setup_priority::DATA; }
 
-  void set_encoder_sensor(uint8_t index, sensor::Sensor *sensor) { this->encoders_[index] = sensor; }
-  void set_button_sensor(uint8_t index, binary_sensor::BinarySensor *sensor, bool inverted) {
-    this->buttons_[index] = sensor;
-    this->button_inverted_[index] = inverted;
+  void set_encoder_sensor(uint8_t index, sensor::Sensor *value) { encoders_[index] = value; }
+  void set_button_sensor(uint8_t index, binary_sensor::BinarySensor *value, bool inverted) {
+    buttons_[index] = value;
+    button_inverted_[index] = inverted;
   }
-  void set_toggle_sensor(binary_sensor::BinarySensor *sensor, bool inverted) {
-    this->toggle_ = sensor;
-    this->toggle_inverted_ = inverted;
+  void set_toggle_sensor(binary_sensor::BinarySensor *value, bool inverted) {
+    toggle_ = value;
+    toggle_inverted_ = inverted;
   }
-
   bool set_led(uint8_t index, uint8_t red, uint8_t green, uint8_t blue);
-  bool set_brightness(uint8_t brightness);
 
  protected:
   bool read_bytes_(uint8_t reg, uint8_t *data, size_t len);
   bool write_bytes_(uint8_t reg, const uint8_t *data, size_t len);
-
-  std::array<sensor::Sensor *, 8> encoders_{{nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr}};
-  std::array<binary_sensor::BinarySensor *, 8> buttons_{{nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr}};
+  std::array<sensor::Sensor *, 8> encoders_{};
+  std::array<binary_sensor::BinarySensor *, 8> buttons_{};
   std::array<bool, 8> button_inverted_{{true, true, true, true, true, true, true, true}};
   binary_sensor::BinarySensor *toggle_{nullptr};
   bool toggle_inverted_{false};
@@ -57,7 +52,6 @@ class M5StackU153Light : public light::LightOutput {
   M5StackU153Light(M5StackU153 *parent, uint8_t index) : parent_(parent), index_(index) {}
   light::LightTraits get_traits() override;
   void write_state(light::LightState *state) override;
-
  protected:
   M5StackU153 *parent_;
   uint8_t index_;

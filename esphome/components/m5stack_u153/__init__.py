@@ -1,17 +1,17 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import i2c, sensor, binary_sensor
-from esphome.const import CONF_ID, CONF_NUMBER, CONF_NAME
+from esphome.const import CONF_ID, CONF_NUMBER
 
 CODEOWNERS = []
 DEPENDENCIES = ["i2c"]
+AUTO_LOAD = ["sensor", "binary_sensor"]
 MULTI_CONF = True
 
 CONF_ENCODERS = "encoders"
 CONF_BUTTONS = "buttons"
 CONF_TOGGLE = "toggle"
 CONF_INVERTED = "inverted"
-CONF_UPDATE_INTERVAL = "update_interval"
 
 m5stack_u153_ns = cg.esphome_ns.namespace("m5stack_u153")
 M5StackU153 = m5stack_u153_ns.class_("M5StackU153", cg.PollingComponent, i2c.I2CDevice)
@@ -48,23 +48,13 @@ async def to_code(config):
     await cg.register_component(var, config)
     await i2c.register_i2c_device(var, config)
 
-    used_encoders = set()
     for item in config[CONF_ENCODERS]:
-        number = item[CONF_NUMBER]
-        if number in used_encoders:
-            raise cv.Invalid(f"Encoder {number} is configured more than once")
-        used_encoders.add(number)
         sens = await sensor.new_sensor(item)
-        cg.add(var.set_encoder_sensor(number, sens))
+        cg.add(var.set_encoder_sensor(item[CONF_NUMBER], sens))
 
-    used_buttons = set()
     for item in config[CONF_BUTTONS]:
-        number = item[CONF_NUMBER]
-        if number in used_buttons:
-            raise cv.Invalid(f"Button {number} is configured more than once")
-        used_buttons.add(number)
         btn = await binary_sensor.new_binary_sensor(item)
-        cg.add(var.set_button_sensor(number, btn, item[CONF_INVERTED]))
+        cg.add(var.set_button_sensor(item[CONF_NUMBER], btn, item[CONF_INVERTED]))
 
     if CONF_TOGGLE in config:
         item = config[CONF_TOGGLE]
