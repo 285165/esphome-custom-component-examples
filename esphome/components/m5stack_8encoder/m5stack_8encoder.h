@@ -1,15 +1,13 @@
 #pragma once
-
 #include <array>
 #include <cstdint>
-
+#include "esphome/core/component.h"
+#include "esphome/components/i2c/i2c.h"
+#include "esphome/components/sensor/sensor.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/button/button.h"
-#include "esphome/components/i2c/i2c.h"
 #include "esphome/components/light/light_output.h"
 #include "esphome/components/light/light_state.h"
-#include "esphome/components/sensor/sensor.h"
-#include "esphome/core/component.h"
 
 namespace esphome {
 namespace m5stack_8encoder {
@@ -22,18 +20,10 @@ class M5Stack8Encoder : public PollingComponent, public i2c::I2CDevice {
   float get_setup_priority() const override { return setup_priority::DATA; }
 
   void set_encoder_sensor(uint8_t index, sensor::Sensor *entity);
-  void set_increment_sensor(uint8_t index, sensor::Sensor *entity) {
-    if (index < this->increment_sensors_.size())
-      this->increment_sensors_[index] = entity;
-  }
-  void set_button_sensor(uint8_t index, binary_sensor::BinarySensor *entity,
-                         uint8_t pressed_value);
-  void set_sw_sensor(binary_sensor::BinarySensor *entity) { this->sw_sensor_ = entity; }
-  void set_change_i2c_address_to(uint8_t address) {
-    this->change_i2c_address_ = true;
-    this->new_i2c_address_ = address;
-  }
-
+  void set_increment_sensor(uint8_t index, sensor::Sensor *entity);
+  void set_button_sensor(uint8_t index, binary_sensor::BinarySensor *entity, uint8_t pressed_value);
+  void set_sw_sensor(binary_sensor::BinarySensor *entity) { sw_sensor_ = entity; }
+  void set_change_i2c_address_to(uint8_t address) { change_i2c_address_ = true; new_i2c_address_ = address; }
   bool set_led(uint8_t index, uint8_t red, uint8_t green, uint8_t blue);
   bool reset_all_counters();
 
@@ -53,18 +43,31 @@ class M5Stack8Encoder : public PollingComponent, public i2c::I2CDevice {
   bool present_{false};
   bool change_i2c_address_{false};
   uint8_t new_i2c_address_{0x41};
+
   std::array<sensor::Sensor *, 8> encoder_sensors_{};
+  std::array<int32_t, 8> last_counter_values_{};
+  std::array<bool, 8> last_counter_valid_{};
+
   std::array<sensor::Sensor *, 8> increment_sensors_{};
+  std::array<int32_t, 8> last_increment_values_{};
+  std::array<bool, 8> last_increment_valid_{};
+
   std::array<binary_sensor::BinarySensor *, 8> button_sensors_{};
   std::array<uint8_t, 8> button_pressed_values_{};
+  std::array<bool, 8> last_button_values_{};
+  std::array<bool, 8> last_button_valid_{};
+
   binary_sensor::BinarySensor *sw_sensor_{nullptr};
+  bool last_sw_value_{false};
+  bool last_sw_valid_{false};
+
   uint8_t firmware_version_{0};
   bool firmware_version_valid_{false};
 };
 
 class M5Stack8EncoderResetAllButton : public button::Button {
  public:
-  void set_parent(M5Stack8Encoder *parent) { this->parent_ = parent; }
+  void set_parent(M5Stack8Encoder *parent) { parent_ = parent; }
  protected:
   void press_action() override;
   M5Stack8Encoder *parent_{nullptr};
@@ -72,8 +75,7 @@ class M5Stack8EncoderResetAllButton : public button::Button {
 
 class M5Stack8EncoderLight : public light::LightOutput {
  public:
-  M5Stack8EncoderLight(M5Stack8Encoder *parent, uint8_t index)
-      : parent_(parent), index_(index) {}
+  M5Stack8EncoderLight(M5Stack8Encoder *parent, uint8_t index) : parent_(parent), index_(index) {}
   light::LightTraits get_traits() override;
   void write_state(light::LightState *state) override;
  protected:

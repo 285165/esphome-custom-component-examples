@@ -16,23 +16,16 @@ CONF_RESET_ALL = "reset_all"
 CONF_PRESSED_VALUE = "pressed_value"
 CONF_CHANGE_I2C_ADDRESS_TO = "change_i2c_address_to"
 
-m5stack_8encoder_ns = cg.esphome_ns.namespace("m5stack_8encoder")
-M5Stack8Encoder = m5stack_8encoder_ns.class_(
-    "M5Stack8Encoder", cg.PollingComponent, i2c.I2CDevice
-)
-M5Stack8EncoderResetAllButton = m5stack_8encoder_ns.class_(
-    "M5Stack8EncoderResetAllButton", button.Button
-)
+ns = cg.esphome_ns.namespace("m5stack_8encoder")
+M5Stack8Encoder = ns.class_("M5Stack8Encoder", cg.PollingComponent, i2c.I2CDevice)
+ResetAllButton = ns.class_("M5Stack8EncoderResetAllButton", button.Button)
 
-CHANNEL_SENSOR_SCHEMA = sensor.sensor_schema(
-    accuracy_decimals=0,
-    icon="mdi:knob",
-).extend({
-    cv.Required(CONF_NUMBER): cv.int_range(min=0, max=7),
-})
+NUMBERED_SENSOR_SCHEMA = sensor.sensor_schema(
+    accuracy_decimals=0, icon="mdi:knob"
+).extend({cv.Required(CONF_NUMBER): cv.int_range(min=0, max=7)})
 
-BUTTON_SCHEMA = binary_sensor.binary_sensor_schema(
-    icon="mdi:gesture-tap-button",
+CHANNEL_BUTTON_SCHEMA = binary_sensor.binary_sensor_schema(
+    icon="mdi:gesture-tap-button"
 ).extend({
     cv.Required(CONF_NUMBER): cv.int_range(min=0, max=7),
     cv.Optional(CONF_PRESSED_VALUE, default=0): cv.one_of(0, 1, int=True),
@@ -41,16 +34,12 @@ BUTTON_SCHEMA = binary_sensor.binary_sensor_schema(
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(M5Stack8Encoder),
     cv.Optional(CONF_CHANGE_I2C_ADDRESS_TO): cv.i2c_address,
-    cv.Optional(CONF_ENCODERS, default=[]): cv.ensure_list(CHANNEL_SENSOR_SCHEMA),
-    cv.Optional(CONF_INCREMENTS, default=[]): cv.ensure_list(CHANNEL_SENSOR_SCHEMA),
-    cv.Optional(CONF_BUTTONS, default=[]): cv.ensure_list(BUTTON_SCHEMA),
+    cv.Optional(CONF_ENCODERS, default=[]): cv.ensure_list(NUMBERED_SENSOR_SCHEMA),
+    cv.Optional(CONF_INCREMENTS, default=[]): cv.ensure_list(NUMBERED_SENSOR_SCHEMA),
+    cv.Optional(CONF_BUTTONS, default=[]): cv.ensure_list(CHANNEL_BUTTON_SCHEMA),
     cv.Optional(CONF_SW): binary_sensor.binary_sensor_schema(icon="mdi:toggle-switch"),
-    cv.Optional(CONF_RESET_ALL): button.button_schema(
-        M5Stack8EncoderResetAllButton, icon="mdi:counter"
-    ),
-}).extend(cv.polling_component_schema("200ms")).extend(
-    i2c.i2c_device_schema(0x41)
-)
+    cv.Optional(CONF_RESET_ALL): button.button_schema(ResetAllButton, icon="mdi:counter"),
+}).extend(cv.polling_component_schema("200ms")).extend(i2c.i2c_device_schema(0x41))
 
 
 def _validate(config):
@@ -83,9 +72,7 @@ async def to_code(config):
 
     for item in config[CONF_BUTTONS]:
         entity = await binary_sensor.new_binary_sensor(item)
-        cg.add(var.set_button_sensor(
-            item[CONF_NUMBER], entity, item[CONF_PRESSED_VALUE]
-        ))
+        cg.add(var.set_button_sensor(item[CONF_NUMBER], entity, item[CONF_PRESSED_VALUE]))
 
     if CONF_SW in config:
         entity = await binary_sensor.new_binary_sensor(config[CONF_SW])
