@@ -4,14 +4,12 @@ namespace esphome {
 namespace m5stack_u153 {
 static const char *const TAG = "m5stack_u153";
 
-// Kluczowa poprawka: sekwencja write(reg) z STOP, nastepnie osobny read z STOP.
+// write(reg) konczy sie STOP (domyslnie), potem osobny read = nowy START..STOP.
 // Odpowiada Wire.write(reg)+endTransmission()+requestFrom() w bibliotece M5Stack.
-// ESPHome read_bytes() uzywa repeated-start, ktory zawiesza STM32 U153 -> timeout.
+// NIE uzywa repeated-start, ktory zawiesza STM32 w U153.
 bool M5StackU153::read_regs_(uint8_t reg, uint8_t *data, uint8_t len) {
-  // write wskaznika rejestru, stop = true (wymusza warunek STOP)
-  if (this->write(&reg, 1, true) != i2c::ERROR_OK)
+  if (this->write(&reg, 1) != i2c::ERROR_OK)
     return false;
-  // osobny odczyt jako nowa transakcja START..STOP
   if (this->read(data, len) != i2c::ERROR_OK)
     return false;
   return true;
@@ -51,7 +49,7 @@ void M5StackU153::update() {
 bool M5StackU153::set_led(uint8_t i, uint8_t r, uint8_t g, uint8_t b) {
   if (i >= 8) return false;
   uint8_t buf[4] = {uint8_t(0x70 + i * 3), r, g, b};
-  if (this->write(buf, 4, true) != i2c::ERROR_OK) { ESP_LOGW(TAG, "Failed LED %u", i); return false; }
+  if (this->write(buf, 4) != i2c::ERROR_OK) { ESP_LOGW(TAG, "Failed LED %u", i); return false; }
   return true;
 }
 
