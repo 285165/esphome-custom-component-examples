@@ -1,14 +1,12 @@
 #pragma once
-
 #include <array>
 #include <cstdint>
-
-#include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/core/component.h"
 #include "esphome/components/i2c/i2c.h"
+#include "esphome/components/sensor/sensor.h"
+#include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/light/light_output.h"
 #include "esphome/components/light/light_state.h"
-#include "esphome/components/sensor/sensor.h"
-#include "esphome/core/component.h"
 
 namespace esphome {
 namespace m5stack_8angle {
@@ -20,18 +18,13 @@ class M5Stack8Angle : public PollingComponent, public i2c::I2CDevice {
   void dump_config() override;
   float get_setup_priority() const override { return setup_priority::DATA; }
 
-  void set_channel_sensor(uint8_t channel, sensor::Sensor *entity,
-                          uint8_t bit_depth);
-  void set_sw_sensor(binary_sensor::BinarySensor *entity) {
-    this->sw_sensor_ = entity;
-  }
+  void set_channel_sensor(uint8_t channel, sensor::Sensor *entity, uint8_t bit_depth);
+  void set_sw_sensor(binary_sensor::BinarySensor *entity) { sw_sensor_ = entity; }
   void set_change_i2c_address_to(uint8_t address) {
-    this->change_i2c_address_ = true;
-    this->new_i2c_address_ = address;
+    change_i2c_address_ = true;
+    new_i2c_address_ = address;
   }
-
-  bool set_led(uint8_t index, uint8_t red, uint8_t green, uint8_t blue,
-               uint8_t brightness);
+  bool set_led(uint8_t index, uint8_t red, uint8_t green, uint8_t blue, uint8_t brightness);
 
  protected:
   static constexpr uint8_t REG_ANALOG_12BIT_BASE = 0x00;
@@ -50,21 +43,25 @@ class M5Stack8Angle : public PollingComponent, public i2c::I2CDevice {
   bool present_{false};
   bool change_i2c_address_{false};
   uint8_t new_i2c_address_{0x43};
+
   std::array<sensor::Sensor *, 8> channel_sensors_{};
   std::array<uint8_t, 8> channel_bit_depths_{{12, 12, 12, 12, 12, 12, 12, 12}};
+  std::array<uint16_t, 8> last_channel_values_{};
+  std::array<bool, 8> last_channel_valid_{};
+
   binary_sensor::BinarySensor *sw_sensor_{nullptr};
+  bool last_sw_value_{false};
+  bool last_sw_valid_{false};
+
   uint8_t firmware_version_{0};
   bool firmware_version_valid_{false};
 };
 
 class M5Stack8AngleLight : public light::LightOutput {
  public:
-  M5Stack8AngleLight(M5Stack8Angle *parent, uint8_t index)
-      : parent_(parent), index_(index) {}
-
+  M5Stack8AngleLight(M5Stack8Angle *parent, uint8_t index) : parent_(parent), index_(index) {}
   light::LightTraits get_traits() override;
   void write_state(light::LightState *state) override;
-
  protected:
   M5Stack8Angle *parent_;
   uint8_t index_;

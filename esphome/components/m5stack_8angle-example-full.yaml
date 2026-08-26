@@ -11,7 +11,7 @@ external_components:
 m5stack_8angle:
   id: angle8
   address: 0x43
-  update_interval: 100ms
+  update_interval: 500ms
 
   channels:
     - number: 0
