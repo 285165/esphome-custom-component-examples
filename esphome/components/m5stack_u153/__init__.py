@@ -4,7 +4,7 @@ from esphome.components import binary_sensor, i2c, sensor
 from esphome.const import CONF_ID, CONF_NUMBER
 CODEOWNERS=[]
 DEPENDENCIES=["i2c"]
-AUTO_LOAD=["sensor","binary_sensor"]
+AUTO_LOAD=["sensor","binary_sensor","light"]
 MULTI_CONF=True
 CONF_ENCODERS="encoders"; CONF_BUTTONS="buttons"; CONF_SWITCH="switch"; CONF_PRESSED_VALUE="pressed_value"
 ns=cg.esphome_ns.namespace("m5stack_u153")
