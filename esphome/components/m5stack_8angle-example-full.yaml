@@ -1,0 +1,99 @@
+external_components:
+  - source:
+      type: git
+      url: https://github.com/285165/esphome-custom-component-examples
+      path: esphome/components
+      ref: master
+    components:
+      - m5stack_8angle
+    refresh: 0s
+
+m5stack_8angle:
+  id: angle8
+  address: 0x43
+  update_interval: 100ms
+
+  channels:
+    - number: 0
+      name: "CH1"
+      bit_depth: 12bit
+    - number: 1
+      name: "CH2"
+      bit_depth: 12bit
+    - number: 2
+      name: "CH3"
+      bit_depth: 12bit
+    - number: 3
+      name: "CH4"
+      bit_depth: 12bit
+    - number: 4
+      name: "CH5"
+      bit_depth: 12bit
+    - number: 5
+      name: "CH6"
+      bit_depth: 12bit
+    - number: 6
+      name: "CH7"
+      bit_depth: 12bit
+    - number: 7
+      name: "CH8"
+      bit_depth: 12bit
+
+  sw:
+    name: "SW"
+
+light:
+  - platform: m5stack_8angle
+    m5stack_8angle_id: angle8
+    number: 0
+    name: "CH1 LED"
+    default_transition_length: 0s
+    restore_mode: ALWAYS_OFF
+  - platform: m5stack_8angle
+    m5stack_8angle_id: angle8
+    number: 1
+    name: "CH2 LED"
+    default_transition_length: 0s
+    restore_mode: ALWAYS_OFF
+  - platform: m5stack_8angle
+    m5stack_8angle_id: angle8
+    number: 2
+    name: "CH3 LED"
+    default_transition_length: 0s
+    restore_mode: ALWAYS_OFF
+  - platform: m5stack_8angle
+    m5stack_8angle_id: angle8
+    number: 3
+    name: "CH4 LED"
+    default_transition_length: 0s
+    restore_mode: ALWAYS_OFF
+  - platform: m5stack_8angle
+    m5stack_8angle_id: angle8
+    number: 4
+    name: "CH5 LED"
+    default_transition_length: 0s
+    restore_mode: ALWAYS_OFF
+  - platform: m5stack_8angle
+    m5stack_8angle_id: angle8
+    number: 5
+    name: "CH6 LED"
+    default_transition_length: 0s
+    restore_mode: ALWAYS_OFF
+  - platform: m5stack_8angle
+    m5stack_8angle_id: angle8
+    number: 6
+    name: "CH7 LED"
+    default_transition_length: 0s
+    restore_mode: ALWAYS_OFF
+  - platform: m5stack_8angle
+    m5stack_8angle_id: angle8
+    number: 7
+    name: "CH8 LED"
+    default_transition_length: 0s
+    restore_mode: ALWAYS_OFF
+  - platform: m5stack_8angle
+    m5stack_8angle_id: angle8
+    number: 8
+    name: "SW LED"
+    default_transition_length: 0s
+    restore_mode: ALWAYS_OFF

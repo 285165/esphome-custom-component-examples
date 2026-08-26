@@ -1,33 +1,73 @@
 #pragma once
 
+#include <array>
+#include <cstdint>
+
+#include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/i2c/i2c.h"
+#include "esphome/components/light/light_output.h"
+#include "esphome/components/light/light_state.h"
+#include "esphome/components/sensor/sensor.h"
 #include "esphome/core/component.h"
 
 namespace esphome {
 namespace m5stack_8angle {
 
-static const uint8_t M5STACK_8ANGLE_REGISTER_ANALOG_INPUT_12B = 0x00;
-static const uint8_t M5STACK_8ANGLE_REGISTER_ANALOG_INPUT_8B = 0x10;
-static const uint8_t M5STACK_8ANGLE_REGISTER_DIGITAL_INPUT = 0x20;
-static const uint8_t M5STACK_8ANGLE_REGISTER_RGB_24B = 0x30;
-static const uint8_t M5STACK_8ANGLE_REGISTER_FW_VERSION = 0xFE;
-
-enum AnalogBits : uint8_t {
-  BITS_8 = 8,
-  BITS_12 = 12,
-};
-
-class M5Stack8AngleComponent : public i2c::I2CDevice, public Component {
+class M5Stack8Angle : public PollingComponent, public i2c::I2CDevice {
  public:
   void setup() override;
+  void update() override;
   void dump_config() override;
-  float get_setup_priority() const override;
-  float read_knob_pos(uint8_t channel, AnalogBits bits = AnalogBits::BITS_8);
-  int32_t read_knob_pos_raw(uint8_t channel, AnalogBits bits = AnalogBits::BITS_8);
-  int8_t read_switch();
+  float get_setup_priority() const override { return setup_priority::DATA; }
+
+  void set_channel_sensor(uint8_t channel, sensor::Sensor *entity,
+                          uint8_t bit_depth);
+  void set_sw_sensor(binary_sensor::BinarySensor *entity) {
+    this->sw_sensor_ = entity;
+  }
+  void set_change_i2c_address_to(uint8_t address) {
+    this->change_i2c_address_ = true;
+    this->new_i2c_address_ = address;
+  }
+
+  bool set_led(uint8_t index, uint8_t red, uint8_t green, uint8_t blue,
+               uint8_t brightness);
 
  protected:
-  uint8_t fw_version_;
+  static constexpr uint8_t REG_ANALOG_12BIT_BASE = 0x00;
+  static constexpr uint8_t REG_ANALOG_8BIT_BASE = 0x10;
+  static constexpr uint8_t REG_SW = 0x20;
+  static constexpr uint8_t REG_RGB_LED0_BASE = 0x30;
+  static constexpr uint8_t REG_RGB_LED4_BASE = 0x40;
+  static constexpr uint8_t REG_RGB_LED8_BASE = 0x50;
+  static constexpr uint8_t REG_FIRMWARE_VERSION = 0xF0;
+  static constexpr uint8_t REG_I2C_ADDRESS = 0xFF;
+
+  bool read_regs_(uint8_t reg, uint8_t *data, uint8_t len);
+  bool change_device_address_();
+  uint8_t led_register_(uint8_t index) const;
+
+  bool present_{false};
+  bool change_i2c_address_{false};
+  uint8_t new_i2c_address_{0x43};
+  std::array<sensor::Sensor *, 8> channel_sensors_{};
+  std::array<uint8_t, 8> channel_bit_depths_{{12, 12, 12, 12, 12, 12, 12, 12}};
+  binary_sensor::BinarySensor *sw_sensor_{nullptr};
+  uint8_t firmware_version_{0};
+  bool firmware_version_valid_{false};
+};
+
+class M5Stack8AngleLight : public light::LightOutput {
+ public:
+  M5Stack8AngleLight(M5Stack8Angle *parent, uint8_t index)
+      : parent_(parent), index_(index) {}
+
+  light::LightTraits get_traits() override;
+  void write_state(light::LightState *state) override;
+
+ protected:
+  M5Stack8Angle *parent_;
+  uint8_t index_;
 };
 
 }  // namespace m5stack_8angle

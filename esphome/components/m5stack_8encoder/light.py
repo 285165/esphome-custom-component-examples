@@ -14,7 +14,7 @@ M5Stack8EncoderLight = m5stack_8encoder_ns.class_(
 CONFIG_SCHEMA = light.RGB_LIGHT_SCHEMA.extend({
     cv.GenerateID(CONF_OUTPUT_ID): cv.declare_id(M5Stack8EncoderLight),
     cv.Required(CONF_M5STACK_8ENCODER_ID): cv.use_id(M5Stack8Encoder),
-    cv.Required(CONF_NUMBER): cv.int_range(min=0, max=7),
+    cv.Required(CONF_NUMBER): cv.int_range(min=0, max=8),
 })
 
 

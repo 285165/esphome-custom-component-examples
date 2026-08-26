@@ -167,7 +167,7 @@ void M5Stack8Encoder::update() {
 
 bool M5Stack8Encoder::set_led(uint8_t index, uint8_t red, uint8_t green,
                               uint8_t blue) {
-  if (!this->present_ || this->is_failed() || index >= 8)
+  if (!this->present_ || this->is_failed() || index >= 9)
     return false;
 
   const uint8_t data[4] = {

@@ -15,37 +15,65 @@ m5stack_8encoder:
   update_interval: 200ms
 
   encoders:
-    - { number: 0, name: "CH1" }
-    - { number: 1, name: "CH2" }
-    - { number: 2, name: "CH3" }
-    - { number: 3, name: "CH4" }
-    - { number: 4, name: "CH5" }
-    - { number: 5, name: "CH6" }
-    - { number: 6, name: "CH7" }
-    - { number: 7, name: "CH8" }
+    - number: 0
+      name: "CH1"
+
+    - number: 1
+      name: "CH2"
+
+    - number: 2
+      name: "CH3"
+
+    - number: 3
+      name: "CH4"
+
+    - number: 4
+      name: "CH5"
+
+    - number: 5
+      name: "CH6"
+
+    - number: 6
+      name: "CH7"
+
+    - number: 7
+      name: "CH8"
 
   buttons:
-    - { number: 0, name: "CH1 Button", pressed_value: 0 }
-    - { number: 1, name: "CH2 Button", pressed_value: 0 }
-    - { number: 2, name: "CH3 Button", pressed_value: 0 }
-    - { number: 3, name: "CH4 Button", pressed_value: 0 }
-    - { number: 4, name: "CH5 Button", pressed_value: 0 }
-    - { number: 5, name: "CH6 Button", pressed_value: 0 }
-    - { number: 6, name: "CH7 Button", pressed_value: 0 }
-    - { number: 7, name: "CH8 Button", pressed_value: 0 }
+    - number: 0
+      name: "CH1 Button"
+      pressed_value: 0
+
+    - number: 1
+      name: "CH2 Button"
+      pressed_value: 0
+
+    - number: 2
+      name: "CH3 Button"
+      pressed_value: 0
+
+    - number: 3
+      name: "CH4 Button"
+      pressed_value: 0
+
+    - number: 4
+      name: "CH5 Button"
+      pressed_value: 0
+
+    - number: 5
+      name: "CH6 Button"
+      pressed_value: 0
+
+    - number: 6
+      name: "CH7 Button"
+      pressed_value: 0
+
+    - number: 7
+      name: "CH8 Button"
+      pressed_value: 0
 
   sw:
     name: "SW"
 
   reset_all:
     name: "Reset CH1-CH8"
-
-light:
-  - { platform: m5stack_8encoder, m5stack_8encoder_id: encoder8, number: 0, name: "CH1 LED", default_transition_length: 0s, restore_mode: ALWAYS_OFF }
-  - { platform: m5stack_8encoder, m5stack_8encoder_id: encoder8, number: 1, name: "CH2 LED", default_transition_length: 0s, restore_mode: ALWAYS_OFF }
-  - { platform: m5stack_8encoder, m5stack_8encoder_id: encoder8, number: 2, name: "CH3 LED", default_transition_length: 0s, restore_mode: ALWAYS_OFF }
-  - { platform: m5stack_8encoder, m5stack_8encoder_id: encoder8, number: 3, name: "CH4 LED", default_transition_length: 0s, restore_mode: ALWAYS_OFF }
-  - { platform: m5stack_8encoder, m5stack_8encoder_id: encoder8, number: 4, name: "CH5 LED", default_transition_length: 0s, restore_mode: ALWAYS_OFF }
-  - { platform: m5stack_8encoder, m5stack_8encoder_id: encoder8, number: 5, name: "CH6 LED", default_transition_length: 0s, restore_mode: ALWAYS_OFF }
-  - { platform: m5stack_8encoder, m5stack_8encoder_id: encoder8, number: 6, name: "CH7 LED", default_transition_length: 0s, restore_mode: ALWAYS_OFF }
-  - { platform: m5stack_8encoder, m5stack_8encoder_id: encoder8, number: 7, name: "CH8 LED", default_transition_length: 0s, restore_mode: ALWAYS_OFF }
